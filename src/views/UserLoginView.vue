@@ -18,7 +18,7 @@
       </div>
     </div>
     <form>
-      <h2 style="font-size: 2.00rem; font-weight: 600; color: #62646B;">用户登录</h2>
+      <h2 style="font-size: 1.50rem; font-weight: 600; color: #62646B;">用户登录</h2>
       <div style="margin-bottom: 1rem;">
         <el-input v-model="username" 
         :focus="onUsernameInputFocus" 
@@ -32,16 +32,17 @@
         size="large" type="password" placeholder="您的密码" clearable="true" show-password="true"/>
       </div>
       <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-        <input type="checkbox" id="remember" style="margin-right: 0.5rem;">
-        <label for="remember" style="font-size: 0.875rem; margin-right: auto;">Remember me</label>
+        <el-checkbox style="margin-right: auto;">请记住我......</el-checkbox>
+        <!-- <input type="checkbox" id="remember" style="margin-right: 0.5rem;"> -->
+        <!-- <label for="remember" style="font-size: 0.875rem; margin-right: auto;">Remember me</label> -->
         <div style="display: flex; text-align: right;">
           <a href="#" style="right: 0; font-size: 0.875rem; color: #4a5568; transition: color 0.3s;">忘记密码了吗?</a>
         </div>
       </div>
       <div style="margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between;">
         <div style="display: flex; align-items: center;">
-          <img src="https://placehold.co/20x20" alt="Success" style="margin-right: 0.5rem;">
-          <span>Success!</span>
+          <!-- <img src="https://placehold.co/20x20" alt="Success" style="margin-right: 0.5rem;">
+          <span>Success!</span> -->
         </div>
         <span v-show="firefiyLookingUsername" style="right: 0; display: flex; align-items: center; padding-right: 0.75rem;">
           <img src="../assets/username.png" style="height: 100px;" alt="Show Password">
@@ -53,7 +54,7 @@
           <img src="../assets/looking_login.png" style="height: 100px;" alt="Show Password">
         </span>
       </div>
-      <button @onmouseover="onSubmitBtnHover"  style="width: 100%; background-color: #2563eb; color: #fff; padding: 0.75rem; border-radius: 0.5rem; cursor: pointer; transition: background-color 0.3s;">登录</button>
+      <button type="button" @onmouseover="onSubmitBtnHover" @click="onLoginBtnClick" class="login-btn">登录</button>
     </form>
     <div style="margin-top: 1rem; text-align: center;">
       <p style="font-size: 0.875rem;">什么？还没有账户？ <a href="#" style="color: #2563eb; transition: color 0.3s; text-decoration: none;">注册！</a></p>
@@ -66,12 +67,57 @@
 
 <script lang="ts" setup>
 import { useRouter } from "vue-router"
-import request from "@/https";
-import { ref } from "vue";
+import request from "@/https"
+import { api } from "@/https"
+import { ref } from "vue"
+import { ElMessage } from 'element-plus'
+import { h } from 'vue'
 
 const router = useRouter()
 const username = ref('')
 const password = ref('')
+
+async function onLoginBtnClick() {
+  const data = {
+    username: username,
+    password: password
+  }
+  try {
+    const response = await api.userLogin(username.value, password.value)
+    // const response = await request.post<number>('/user/login', data)
+    switch (response.data.code) {
+      case 700: {
+        ElMessage({
+          message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
+            h('span', null, '登录成功:> ')
+          ]),
+        })
+        break
+      }
+      case 701: {
+        ElMessage({
+          message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
+            h('span', null, '账户不存在:> ')
+          ]),
+        })
+        router.push('/login')
+        break
+      }
+      case 702: {
+        ElMessage({
+          message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
+            h('span', null, '密码错误:> ')
+          ]),
+        })
+        router.push('/login')
+        break
+      }
+    }
+  } catch (error) {
+    
+  }
+}
+
 
 let firefiyLookingUsername = ref(true)
 let firefiyLookingPassword = ref(false)
@@ -142,4 +188,38 @@ function onInputBlur() {
   animation: fadeIn 0.3s ease-in-out;
 }
 
+.login-btn {   
+  width: 100%;  
+  height: 50px;  
+  font-size: 14px;   
+  font-weight: 700;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background-image: -webkit-linear-gradient(0deg, #2AD5DE, #E1E87E); 
+  color: #ffffff;
+  position: relative;
+  cursor: pointer;
+  z-index: 0; 
+} 
+.login-btn:before {   
+  content: '';   
+  width: 0%;   
+  height: inherit;   
+  position: absolute;
+  top: 0;   
+  left: 0;
+  opacity: 0;
+  
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background-image: -webkit-linear-gradient(0deg, #EF412B, #E1E87E);
+  z-index: -1;   
+  transition: all 0.4s; 
+} 
+
+.login-btn:hover:before {
+  width: 100%; 
+  opacity: 1;
+}
 </style>

@@ -1,40 +1,31 @@
 <template>
-  <el-header>  
+  <div class="header">  
     <div class="status">
       <div>0 Books</div>
       <div>0 Visists</div>
     </div>
-    <div class="nav">
-      <el-dropdown>
-        <span class="el-dropdown-link">
-          菜单
-          <el-icon class="el-icon--right">
-            <arrow-down />
-          </el-icon>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item @click.native="toLoginPage" >登录</el-dropdown-item>
-            <el-dropdown-item>Action 2</el-dropdown-item>
-            <el-dropdown-item>Action 3</el-dropdown-item>
-            <el-dropdown-item disabled>Action 4</el-dropdown-item>
-            <el-dropdown-item divided>Action 5</el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </div>
-  </el-header>
+    <!-- <div class="nav"> -->
+    <el-button 
+    style="margin-top: 20px; float: right;" 
+    text 
+    size="large" 
+    type="primary" 
+    @click="toLoginPage">
+      登录
+    </el-button>
+    <!-- </div> -->
+  </div>
   <div class="main">
     <div
     style="
       text-align: center;
       font-size: 50px;
       background-clip: text;
-      /* 将背景设为渐�? */
+      /* 灏嗚儗鏅涓烘笎锟�? */
       background-image: -webkit-linear-gradient(0deg, #2AD5DE, #E1E87E);
-      /* 规定背景绘制区域 */
+      /* 瑙勫畾鑳屾櫙缁樺埗鍖哄煙 */
       -webkit-background-clip: text;
-      /* 将文字隐�? */
+      /* 灏嗘枃瀛楅殣锟�? */
       -webkit-text-fill-color: transparent;">
       Firefly-Library
     </div>
@@ -63,32 +54,31 @@
         </el-button>
       </div>
     </el-form>
-    <div class="results-container" v-if="tableData.length > 0">
+    <div class="results-container" v-if="tableData.datas.length">
       <h2>Search Books On Z-Library. The World's Largest E-book Library.</h2>
       <div class="tab-container">
-        <button class="active">Books (15+)</button>
-        <button>Articles</button>
+        <button class="active">Books <p>{{ tableData.totalPage * tableData.pageSize }}</p></button>
       </div>
-      <div class="result-item" v-for="(value, index) in tableData" :key="index">
+      <div class="result-item" v-for="(value, index) in tableData.datas" :key="index">
         <img src="https://via.placeholder.com/100" alt="Book Cover">
         <div>
-          <h3><a href="#">{{ value.id }}</a></h3>
-          <p>{{ value.return_date }}</p>
-          <p>{{ value.user_id }}</p>
-          <p>{{ value.really_return_date }}</p>
-          <p>{{ value.borrow_date }}</p>
+          <h3><a href="#">{{ value.title }}</a></h3>
+          <p>作者：{{ value.author }}</p>
+          <p>出版社：{{ value.publisher }}</p>
+          <p>在库数目：{{ value.quantity }}</p>
+          <p>在库Id:{{ value.id }}</p>
         </div>
       </div>
-      <div class="result-item">
+      <!-- <div class="result-item">
         <img src="https://via.placeholder.com/100" alt="Book Cover">
         <div>
-          <h3><a href="#">Dad’s Expecting Too: Expectant fathers, expectant mothers...</a></h3>
+          <h3><a href="#">Dad鈥檚 Expecting Too: Expectant fathers, expectant mothers...</a></h3>
           <p>Publisher</p>
           <p>Author Name</p>
           <p>Edition: Original retail | Year: 2022 | Language: English | File: EPUB</p>
           <p>Rating: 4.0 / 5.0</p>
         </div>
-      </div>
+      </div> -->
       <!-- Add more result items as needed -->
     </div>
   </div>
@@ -99,17 +89,23 @@
 </template>
 
 <style>
+.header {
+  display: flex;
+}
 
 .nav {
-  margin-top: 10px;
+  margin-top: 20px;
   float: right;
 }
 
 .status {
-  position: fixed;
+  margin-left: 10px;
+  margin-top: 20px;
+  /* position: fixed; */
   top: 0;
   left: 0;
-  width: 100%;
+  margin-right: auto;
+  width: 50%;
   display: flex;
   gap: 10px;
 }
@@ -202,39 +198,29 @@
 </style>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 import { useRouter } from "vue-router"
 import request from "@/https";
+import { Book, Page } from "@/type";
 
-interface BorrowRecord {
-    book_id?: number;
-    borrow_date?: string;
-    id?: number;
-    really_return_date?: null;
-    return_date?: string;
-    user_id?: number;
-}
-
-const tableData = ref<Array<BorrowRecord>>([])
+const tableData = ref<Page<Book>>({pageOn: 0, pageSize: 0, totalPage: 0, totalSize: 0, datas: []})
+const tableDataLen = ref<number>(0)
 let router = useRouter()
 const searchContent = ref("")
 const onSubmit = () => {
-  console.log("search by keyword: " + searchContent.value)
-  router.push({
-    path: '/',
-    query: { keyword: searchContent.value },
-  })
+  fetchAllBorrowRecords()
 }
 
-setTimeout(()=> {
-  fetchAllBorrowRecords()
-}, 3000);
+// setTimeout(()=> {
+//   fetchAllBorrowRecords()
+// }, 1000);
 
 async function fetchAllBorrowRecords() {
   try {
-    let response = await request.get<Array<BorrowRecord>>('/borrow')
+    let response = await request.get<Page<Book>>('/book', {params: {'keyword': searchContent.value}})
     tableData.value = response.data.result
-    console.log(tableData)   
+    console.log(tableData) 
+    console.log(tableData.value.datas.length)     
   } catch (err) {
     console.log(err)
   }

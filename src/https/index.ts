@@ -1,6 +1,9 @@
-// ½Ó¿Ú·â×°
+// æ¥å£å°è£…
 import axios from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { ElMessage } from 'element-plus';
+import { get, post } from 'node_modules/axios/index.cjs';
+import { h } from 'vue';
 
 type Result<T> = {
   code: number;
@@ -8,7 +11,7 @@ type Result<T> = {
   result: T;
 };
 
-// µ¼³ö Request Àà
+// å¯¼å‡º Request ç±»
 export class Request {
   instance: AxiosInstance;
   baseConfig: AxiosRequestConfig = { baseURL: "/api", timeout: 3000 };
@@ -16,69 +19,94 @@ export class Request {
   constructor(config: AxiosRequestConfig) {
     this.instance = axios.create(Object.assign(this.baseConfig, config));
 
-    // ÅäÖÃÇëÇóÀ¹½ØÆ÷
+    // é…ç½®è¯·æ±‚æ‹¦æˆªå™¨
     this.instance.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
-        // ÔÚÇëÇóÇ°½øĞĞÀ¹½Ø£¬Íê³É¼øÈ¨Ïà¹ØµÄ²Ù×÷
+        // åœ¨è¯·æ±‚å‰è¿›è¡Œæ‹¦æˆªï¼Œå®Œæˆé‰´æƒç›¸å…³çš„æ“ä½œ
+        console.log("è¯·æ±‚é…ç½®å¦‚ä¸‹")
+        console.log(config)
         return config;
       },
       (err: any) => {
+        console.log("è¯·æ±‚æŠ¥é”™å¦‚ä¸‹")
+        console.log(err)
         return Promise.reject(err);
       }
     );
 
-    // ÅäÖÃÏìÓ¦À¹½ØÆ÷
+    // é…ç½®å“åº”æ‹¦æˆªå™¨
     this.instance.interceptors.response.use(
       (res: AxiosResponse) => {
+        console.log("å“åº”å¦‚ä¸‹")
+        console.log(res)
         return res;
       },
       (err: any) => {
         let message = '';
+        console.log("å“åº”æŠ¥é”™å¦‚ä¸‹")
+        console.log(err)
         switch (err.response.status) {
           case 400:
-            message = "ÇëÇó´íÎó(400)";
+            message = "è¯·æ±‚é”™è¯¯(400)";
+            console.log(message)
+            ElMessage({
+              message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
+                h('span', null, "æœåŠ¡å™¨é”™è¯¯ :<")
+              ]),
+            })
             break;
           case 401:
-            message = "Î´ÊÚÈ¨£¬ÇëÖØĞÂµÇÂ¼(401)";
-            // ÕâÀï¿ÉÒÔ×öÇå¿Õ storage ²¢Ìø×ªµ½µÇÂ¼Ò³µÄ²Ù×÷
+            message = "æœªæˆæƒï¼Œè¯·é‡æ–°ç™»å½•(401)";
+            // è¿™é‡Œå¯ä»¥åšæ¸…ç©º storage å¹¶è·³è½¬åˆ°ç™»å½•é¡µçš„æ“ä½œ
             break;
           case 403:
-            message = "¾Ü¾ø·ÃÎÊ(403)";
+            message = "æ‹’ç»è®¿é—®(403)";
             break;
           case 404:
-            message = "ÇëÇó³ö´í(404)";
+            message = "è¯·æ±‚å‡ºé”™(404)";
             break;
           case 408:
-            message = "ÇëÇó³¬Ê±(408)";
+            message = "è¯·æ±‚è¶…æ—¶(408)";
             break;
           case 500:
-            message = "·şÎñÆ÷´íÎó(500)";
+            message = "æœåŠ¡å™¨é”™è¯¯(500)";
+            console.log(message)
+            ElMessage({
+              message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
+                h('span', null, "æœåŠ¡å™¨é”™è¯¯ :<")
+              ]),
+            })
             break;
           case 501:
-            message = "·şÎñÎ´ÊµÏÖ(501)";
+            message = "æœåŠ¡æœªå®ç°(501)";
             break;
           case 502:
-            message = "ÍøÂç´íÎó(502)";
+            message = "ç½‘ç»œé”™è¯¯(502)";
             break;
           case 503:
-            message = "·şÎñ²»¿ÉÓÃ(503)";
+            message = "æœåŠ¡ä¸å¯ç”¨(503)";
             break;
           case 504:
-            message = "ÍøÂç³¬Ê±(504)";
+            message = "ç½‘ç»œè¶…æ—¶(504)";
             break;
           case 505:
-            message = "HTTP°æ±¾²»ÊÜÖ§³Ö(505)";
+            message = "HTTPç‰ˆæœ¬ä¸å—æ”¯æŒ(505)";
             break;
           default:
-            message = `Á¬½Ó³ö´í(${err.response.status})!`;
+            message = `è¿æ¥å‡ºé”™(${err.response.status})!`;
+            ElMessage({
+              message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
+                h('span', null, "è¿æ¥å‡ºé”™ :<")
+              ]),
+            })
         }
-        // ¿ÉÒÔÊ¹ÓÃÈ«¾Öµ¯¿òÕ¹Ê¾´íÎóÏûÏ¢
+        // å¯ä»¥ä½¿ç”¨å…¨å±€å¼¹æ¡†å±•ç¤ºé”™è¯¯æ¶ˆæ¯
         return Promise.reject(err.response)
       }
     );
   }
 
-  // ½øÒ»²½·â×°ÇëÇó·½·¨
+  // è¿›ä¸€æ­¥å°è£…è¯·æ±‚æ–¹æ³•
   public request(config: AxiosRequestConfig): Promise<AxiosResponse> {
     return this.instance.request(config);
   }
@@ -112,6 +140,15 @@ export class Request {
     config?: AxiosRequestConfig
   ): Promise<AxiosResponse<Result<T>>> {
     return this.instance.delete(url, config);
+  }
+}
+
+const request = new Request({})
+
+export const api = {
+
+  userLogin(username: string, password: string) {
+    return request.post('/user/login', {'username': username, 'password': password})
   }
 }
 
