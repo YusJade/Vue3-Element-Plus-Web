@@ -57,7 +57,14 @@
       <button type="button" @onmouseover="onSubmitBtnHover" @click="onLoginBtnClick" class="login-btn">登录</button>
     </form>
     <div style="margin-top: 1rem; text-align: center;">
-      <p style="font-size: 0.875rem;">什么？还没有账户？ <a href="#" style="color: #2563eb; transition: color 0.3s; text-decoration: none;">注册！</a></p>
+      <p style="font-size: 0.875rem;">什么？还没有账户？ 
+        <el-button 
+        text 
+        @click="onRegisterBtnClick" 
+        style="color: #2563eb; transition: color 0.3s; text-decoration: none; padding-left: 0;">
+        注册！
+        </el-button>
+      </p>
     </div>
   </div>
 </div>
@@ -116,6 +123,10 @@ async function onLoginBtnClick() {
   } catch (error) {
     
   }
+}
+
+function onRegisterBtnClick() {
+  router.push({path: '/register'})
 }
 
 

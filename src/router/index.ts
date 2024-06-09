@@ -7,12 +7,33 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      redirect: '/home',
+      component: HomeView
+    },
+    {
+      path: '/home',
       component: HomeView
     },
     {
       path: '/login',
       component: UserLoginView
     }, 
+    {
+      path: '/register',
+      component: () => import('@/views/UserRegisterView.vue'), 
+      children: [
+        {
+          path: '#',
+          name: 'input-name-gender',
+          component: () => import('@/views/NameGenderInputBox.vue')
+        },
+        {
+          path: '##',
+          name: 'input-email-phone',
+          component: () => import('@/views/EmailPhoneInputBox.vue')
+        },
+      ]
+    },
     {
       path: '/about',
       // route level code-splitting

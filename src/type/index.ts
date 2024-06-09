@@ -15,6 +15,22 @@ export interface Page<T> {
   datas: Array<T>
 }
 
+/**
+ * User
+ */
+export interface User {
+  created_at?: Date;
+  email: string;
+  gender?: string;
+  id: number;
+  max_borrow_books?: number;
+  max_borrow_days?: number;
+  name: string;
+  password: string;
+  phone: string;
+  username: string;
+  [property: string]: any;
+}
 
 /**
  * Book
