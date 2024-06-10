@@ -1,4 +1,5 @@
 // 接口封装
+import type { User } from '@/type';
 import axios from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { ElMessage } from 'element-plus';
@@ -149,6 +150,16 @@ export const api = {
 
   userLogin(username: string, password: string) {
     return request.post('/user/login', {'username': username, 'password': password})
+  },
+  userRegister(data: User) {
+    return request.post('/user/register', {
+      "username": data.username,
+      "password": data.password,
+      "name": data.name,
+      "gender": data.gender,
+      "phone": data.phone,
+      "email": data.email
+    })
   }
 }
 

@@ -32,6 +32,11 @@ const router = createRouter({
           name: 'input-email-phone',
           component: () => import('@/views/EmailPhoneInputBox.vue')
         },
+        {
+          path: '###',
+          name: 'input-username-password',
+          component: () => import('@/views/UsernamePasswordInputBox.vue')
+        },
       ]
     },
     {

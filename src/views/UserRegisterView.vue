@@ -1,19 +1,26 @@
 <template>
 <div class="container">
+  <div class="right-div">
+      1123
+  </div>
   <div class="card">
     <div class="header">
       <img src="https://placehold.co/50" alt="Google Logo">
       <h1>创建 FireFly-Lib 账号</h1>
     </div>
     <div class="form-group">
-      <router-view :user="user" v-slot="{ Component, route }" >
-        <Transition name="slide-fade" mode="out-in">
-          <component :is="Component" :key="route.path"/>
+      <router-view :user="user" v-slot="{ Component}" >
+        <Transition mode="out-in"
+        enter-active-class="animate__animated animate__slideInRight" 
+        leave-active-class="animate__animated animate__slideOutLeft">
+          <component :is="Component"/>
         </Transition>
       </router-view>
       <!-- <NameGenderInputBox></NameGenderInputBox> -->
     </div>
-
+  </div>
+  <div class="right-div">
+      1123
   </div>
 </div>
 </template>
@@ -23,6 +30,7 @@ import { ref } from 'vue'
 import { User } from '@/type'
 import NameGenderInputBox from '@/views/NameGenderInputBox.vue'
 import router from '@/router';
+import 'animate.css'
 
 const user: User = {
   id: -1,
@@ -37,7 +45,7 @@ const user: User = {
 setTimeout(() => {
   router.push({name: 'input-name-gender'})
   // router.push({name: 'input-email-phone'})
-}, 500)
+}, 100)
 
 // function onNextBtnClick() {
   
@@ -48,31 +56,12 @@ setTimeout(() => {
 
 <style scoped>
 
-/*
-  进入和离开动画可以使用不同
-  持续时间和速度曲线。
-*/
-.slide-fade-enter-active {
-  transition: all 0.7s ease;
-}
-
-.slide-fade-leave-active {
-  transition: all 0.3s cubic-bezier(1, 0.6, 0.6, 1);
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-  transform: translateX(20px);
-  opacity: 0;
-}
-
-.slide-fade-enter-to,
-.slide-fade-leave-from {
-  opacity: 1;
-}
-
 .container {
-  display: flex;
+  /* display: grid;
+  grid-template-columns: auto 1fr; */
+  /* display: flex; */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
@@ -83,13 +72,32 @@ setTimeout(() => {
   background-color: #292524;
 }
 
+.right-div {
+    padding: 2rem;
+    background-color: #f4f4f5;
+    color: white;
+    text-align: center;
+    border-radius: 1.675rem;
+    height: 50vh;
+    /* width: 30vh; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
 .card {
+  display: flex;
+  flex: 2;
   background-color: #ffffff;
   padding: 2rem;
+  padding-left: 0;
   border-radius: 1.675rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-  width: 100%;
-  max-width: 28rem;
+  /* width: 40vh; */
+  height: 50vh;
+  /* max-width: 40rem; */
+  max-height: 30rem;
 }
 
 .card.dark {
@@ -97,10 +105,15 @@ setTimeout(() => {
 }
 
 .header {
+  background-color: #ffffff;
   display: flex;
+  flex: 2;
   flex-direction: column;
   align-items: center;
+  margin-top: 3rem;
+  /* margin-left: 0.5rem; */
   margin-bottom: 1rem;
+  z-index: 2;
 }
 
 .header img {
@@ -111,7 +124,7 @@ setTimeout(() => {
   font-size: 1.125rem;
   font-weight: 600;
   color: #374151;
-  margin-bottom: 0.5rem;
+  margin-left: 0.6rem;
 }
 
 .header h1.dark {
@@ -127,19 +140,22 @@ setTimeout(() => {
 }
 
 .form-group {
+  z-index: 1;
   align-self: center;
+  margin-left: -1.2rem;
+  margin-top: 5rem;
   margin-bottom: 1rem;
 }
 
-.form-group label {
+/* .form-group label {
   color: #4b5563;
 }
 
 .form-group label.dark {
   color: #9ca3af;
-}
+} */
 
-.form-group el-input {
+/* .form-group el-input {
   margin-top: 0.25rem;
   width: 100%;
   padding: 0.5rem;
@@ -150,7 +166,7 @@ setTimeout(() => {
   outline: none;
   transition: all 0.3s ease-in-out;
   font-size: 0.875rem;
-}
+} */
 
 .form-group input:focus {
   border-color: #3b82f6;

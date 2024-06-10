@@ -32,7 +32,7 @@
   function onNextBtnClick() {
     props.user.email = emailConfig.value.vModel 
     props.user.phone = phoneConfig.value.vModel
-    router.push('/home')
+    router.push({name: 'input-username-password'})
     // router.push({ path: '' })
   }
   
