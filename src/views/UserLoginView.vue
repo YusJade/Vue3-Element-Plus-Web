@@ -79,6 +79,7 @@ import { api } from "@/https"
 import { ref } from "vue"
 import { ElMessage } from 'element-plus'
 import { h } from 'vue'
+import { storage } from '@/utils/storage'
 
 const router = useRouter()
 const username = ref('')
@@ -93,11 +94,19 @@ async function onLoginBtnClick() {
     const response = await api.userLogin(username.value, password.value)
     // const response = await request.post<number>('/user/login', data)
     switch (response.data.code) {
-      case 700: {
+      case 500: {
+        const userId = response.data.result
+        const user = await (await api.queryUser(userId)).data.result 
+        storage.set('userId', userId)
+        storage.set('username', user.username)
+        storage.set('userInfo', JSON.stringify(user))
         ElMessage({
           message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
             h('span', null, '登录成功:> ')
           ]),
+        })
+        router.push({
+          path: '/home'
         })
         break
       }

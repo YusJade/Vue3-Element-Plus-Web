@@ -16,6 +16,7 @@
     import { Ref, ref } from 'vue';
     import router from '@/router';
     import { api } from '@/https'
+    import { Message } from '@/utils/message';
     
     const props = defineProps<{ user: User }>()
    
@@ -35,12 +36,18 @@
       props.user.password = passwordConfig.value.vModel
       const response = await api.userRegister(props.user)
       switch (response.data.code) {
-        case 401:
-          break;
-        case 400:
-          break;
-        case 500:
-          break;
+        case api.code.INFO_ERROR:
+          Message('信息错误:<')
+          router.push({name: 'Input-Name-Gender'})
+          break
+        case api.code.SUCCESS:
+          Message('注册成功:>')
+          setTimeout(() => { router.push({path: '/home'})}, 1000)
+          break
+        case api.code.USERNAME_DUPLICATE:
+        Message('用户名已存在:<')
+          setTimeout(() => { router.push({name: 'Input-Name-Gender'})}, 1000)
+          break
       }
       // console.log(response)
       // router.push({name: 'input-name-gender'})

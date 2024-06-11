@@ -2,6 +2,7 @@
 import type { User } from '@/type';
 import axios from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { TIMEOUT } from 'dns/promises';
 import { ElMessage } from 'element-plus';
 import { get, post } from 'node_modules/axios/index.cjs';
 import { h } from 'vue';
@@ -148,6 +149,22 @@ const request = new Request({})
 
 export const api = {
 
+  code : {
+    INFO_ERROR: 400,
+    USERNAME_DUPLICATE: 401,
+    SUCCESS: 500,
+    SERVER_ERROR: 501,
+    TIMEOUT: 502,
+    BOOK_NOT_EXIST: 601,
+    BOOK_NOT_AVAILIABLE: 602,
+    LIMIT_BORROW: 603,
+    BORROW_DUPLICATE: 604,
+    BORROW_NOT_EXIST: 605,
+    RETURN_OVERDUE: 606,
+    RETURN_DUPLICATE: 607,
+    ACCOUNT_NOT_EXIST: 701,
+    PASSWORD_ERROR: 702,
+  },
   userLogin(username: string, password: string) {
     return request.post('/user/login', {'username': username, 'password': password})
   },
@@ -160,6 +177,10 @@ export const api = {
       "phone": data.phone,
       "email": data.email
     })
+  },
+  queryUser(id: string) {
+    
+    return request.get<User>(`/user/${Number(id)}`)
   }
 }
 
