@@ -1,6 +1,6 @@
 
 <template>
- <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background-image: url('src/assets/login_background.jpg'); background-size: cover; background-position: center;">
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background-image: url('src/assets/login_background.jpg'); background-size: cover; background-position: center;">
   <div class="login_box">
     <div style="text-align: center; margin-bottom: 0rem; margin-left: -10px; margin-right: -10px;">
       <div

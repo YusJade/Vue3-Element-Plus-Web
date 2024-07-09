@@ -7,7 +7,6 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/home',
       component: HomeView
     },
     {
@@ -20,7 +19,7 @@ const router = createRouter({
     }, 
     {
       path: '/register',
-      component: () => import('@/views/UserRegisterView.vue'), 
+      component: () => import('@/views/Register.vue'), 
       children: [
         {
           path: '#',

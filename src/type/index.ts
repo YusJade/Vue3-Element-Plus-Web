@@ -44,3 +44,16 @@ export interface Book {
   quantity?: number;
   created_at?: Date;
 }
+
+/**
+ * ApifoxModel
+ */
+export interface Borrow {
+  book_id?: number;
+  borrow_date?: Date;
+  id: number;
+  really_return_date?: Date;
+  return_date?: Date;
+  user_id?: number;
+  [property: string]: any;
+}

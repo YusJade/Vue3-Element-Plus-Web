@@ -1,5 +1,5 @@
 // 接口封装
-import type { User } from '@/type';
+import { Borrow, type User } from '@/type';
 import axios from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { TIMEOUT } from 'dns/promises';
@@ -9,7 +9,7 @@ import { h } from 'vue';
 
 type Result<T> = {
   code: number;
-  message: string;
+  msg: string;
   result: T;
 };
 
@@ -181,6 +181,20 @@ export const api = {
   queryUser(id: string) {
     
     return request.get<User>(`/user/${Number(id)}`)
+  },
+  queryBorrow(id: string) {
+    return request.get<Array<Borrow>>('/borrow', {
+      params: {
+        'user_id': id,
+        'contain_finished': false
+      }
+    })
+  },
+  addBorrow(userId: number, bookId: number) {
+    return request.post<number>('/borrow', {
+      'user_id': userId,
+      'book_id': bookId
+    })
   }
 }
 

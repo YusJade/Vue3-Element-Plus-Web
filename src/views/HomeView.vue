@@ -30,7 +30,7 @@
           <el-tag size="small">{{ user.gender }}</el-tag>
         </el-descriptions-item>
       </el-descriptions>
-    <Table :tableData="tableData"></Table>
+    <Table :tableData="borrows"></Table>
     </el-drawer>
     <!-- </div> -->
   </div>
@@ -40,11 +40,8 @@
       text-align: center;
       font-size: 50px;
       background-clip: text;
-      /* 灏嗚儗鏅涓烘笎锟�? */
       background-image: -webkit-linear-gradient(0deg, #2AD5DE, #E1E87E);
-      /* 瑙勫畾鑳屾櫙缁樺埗鍖哄煙 */
       -webkit-background-clip: text;
-      /* 灏嗘枃瀛楅殣锟�? */
       -webkit-text-fill-color: transparent;">
       Firefly-Library
     </div>
@@ -87,7 +84,7 @@
           <p>在库数目：{{ value.quantity }}</p>
           <p>在库Id:{{ value.id }}</p>
         </div>
-        <el-button v-if="btnTip != '登录'">借阅</el-button>
+        <el-button @click="borrow(value.id)" v-if="btnTip != '登录'">借阅</el-button>
       </div>
       <!-- <div class="result-item">
         <img src="https://via.placeholder.com/100" alt="Book Cover">
@@ -113,10 +110,12 @@
 import { reactive, ref } from 'vue';
 import { useRouter } from "vue-router"
 import request, { api } from "@/https";
-import { Book, Page, User } from "@/type";
+import { Book, Borrow, Page, User } from "@/type";
 import { storage } from '@/utils/storage';
 import Table from '@/components/Table.vue';
 import { create } from 'axios';
+import { Message } from '@/utils/message';
+import { formatDate } from '@/utils/date';
 
 const btnTip = ref('登录')
 const drawer = ref(false)
@@ -133,13 +132,23 @@ const bookPage = ref<Page<Book>>({pageOn: 0, pageSize: 0, totalPage: 0, totalSiz
 const router = useRouter()
 const searchContent = ref("")
 const tableData = ref<Array<Object>>([])
+const borrows= ref<Array<Borrow>>([])
+
 const onSubmit = () => {
   fetchAllBorrowRecords()
 }
 
-setTimeout(()=> {
-  if (storage.get('userId') != 'userId') {
+async function refreshBorrows() {
+  const id = storage.get('userId')
+  const response = await api.queryBorrow(id)
+  borrows.value = response.data.result
+}
+
+setTimeout( async ()=> {
+  let id = storage.get('userId')
+  if (id != 'userId') {
     btnTip.value = storage.get('username')
+    refreshBorrows()
   }
 }, 10);
 
@@ -175,6 +184,12 @@ async function onBtnClick() {
     router.push({path: '/login'})
   }
 } 
+
+async function borrow(bookId: number) {
+  let response = await api.addBorrow(Number(storage.get('userId')), bookId)
+  Message(response.data.msg)
+  refreshBorrows()
+}
 
 </script>
 
