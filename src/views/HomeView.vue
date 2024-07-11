@@ -30,6 +30,21 @@
           <el-tag size="small">{{ user.gender }}</el-tag>
         </el-descriptions-item>
       </el-descriptions>
+      <el-form>
+        <el-form-item label="用户名">
+          <el-input ></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input ></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input ></el-input>
+        </el-form-item>
+        <el-form-item label="姓名">
+          <el-input ></el-input>
+        </el-form-item>
+        <el-button type="primary" @click="saveChanges">保存</el-button>
+      </el-form>
     <Table :tableData="borrows"></Table>
     </el-drawer>
     <!-- </div> -->
@@ -144,13 +159,13 @@ async function refreshBorrows() {
   borrows.value = response.data.result
 }
 
-setTimeout( async ()=> {
-  let id = storage.get('userId')
-  if (id != 'userId') {
-    btnTip.value = storage.get('username')
-    refreshBorrows()
-  }
-}, 10);
+// setTimeout( async ()=> {
+//   let id = storage.get('userId')
+//   if (id != 'userId') {
+//     btnTip.value = storage.get('username')
+//     refreshBorrows()
+//   }
+// }, 10);
 
 function logout() {
   storage.remove('userId')

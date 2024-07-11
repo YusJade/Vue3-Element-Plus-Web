@@ -19,17 +19,14 @@ export interface Page<T> {
  * User
  */
 export interface User {
-  created_at?: Date;
+  username: string;
+  created_at: Date;
   email: string;
-  gender?: string;
-  id: number;
-  max_borrow_books?: number;
-  max_borrow_days?: number;
+  gender: string;
   name: string;
   password: string;
   phone: string;
-  username: string;
-  [property: string]: any;
+  userId: number;
 }
 
 /**

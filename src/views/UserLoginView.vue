@@ -77,61 +77,22 @@ import { useRouter } from "vue-router"
 import request from "@/https"
 import { api } from "@/https"
 import { ref } from "vue"
-import { ElMessage } from 'element-plus'
+import { Message } from "@/utils/message"
 import { h } from 'vue'
-import { storage } from '@/utils/storage'
+import { useUserStore } from "../stores/user"
 
 const router = useRouter()
 const username = ref('')
 const password = ref('')
 
-async function onLoginBtnClick() {
-  const data = {
-    username: username,
-    password: password
-  }
-  try {
-    const response = await api.userLogin(username.value, password.value)
-    // const response = await request.post<number>('/user/login', data)
-    switch (response.data.code) {
-      case 500: {
-        const userId = response.data.result
-        const user = await (await api.queryUser(userId)).data.result 
-        storage.set('userId', userId)
-        storage.set('username', user.username)
-        storage.set('userInfo', JSON.stringify(user))
-        ElMessage({
-          message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
-            h('span', null, '登录成功:> ')
-          ]),
-        })
-        router.push({
-          path: '/home'
-        })
-        break
-      }
-      case 701: {
-        ElMessage({
-          message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
-            h('span', null, '账户不存在:> ')
-          ]),
-        })
-        router.push('/login')
-        break
-      }
-      case 702: {
-        ElMessage({
-          message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
-            h('span', null, '密码错误:> ')
-          ]),
-        })
-        router.push('/login')
-        break
-      }
+function onLoginBtnClick() {
+  await useUserStore.getUserInfo(username, password).then((response) => {
+    switch (response.code) {
+      case api.code.SUCCESS:
+        Message('登录成功');
+        router.push('/home')
     }
-  } catch (error) {
-    
-  }
+  })
 }
 
 function onRegisterBtnClick() {

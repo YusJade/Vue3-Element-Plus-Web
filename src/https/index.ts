@@ -10,10 +10,10 @@ import { h } from 'vue';
 type Result<T> = {
   code: number;
   msg: string;
-  result: T;
+  data: T;
 };
 
-// 导出 Request 类
+// 导出 Request �?
 export class Request {
   instance: AxiosInstance;
   baseConfig: AxiosRequestConfig = { baseURL: "/api", timeout: 3000 };
@@ -21,7 +21,7 @@ export class Request {
   constructor(config: AxiosRequestConfig) {
     this.instance = axios.create(Object.assign(this.baseConfig, config));
 
-    // 配置请求拦截器
+    // 配置请求拦截�?
     this.instance.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
         // 在请求前进行拦截，完成鉴权相关的操作
@@ -36,7 +36,7 @@ export class Request {
       }
     );
 
-    // 配置响应拦截器
+    // 配置响应拦截�?
     this.instance.interceptors.response.use(
       (res: AxiosResponse) => {
         console.log("响应如下")
@@ -53,13 +53,13 @@ export class Request {
             console.log(message)
             ElMessage({
               message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
-                h('span', null, "服务器错误 :<")
+                h('span', null, "服务器错�? :<")
               ]),
             })
             break;
           case 401:
-            message = "未授权，请重新登录(401)";
-            // 这里可以做清空 storage 并跳转到登录页的操作
+            message = "未授权，请重新登�?(401)";
+            // 这里可以做清�? storage 并跳转到登录页的操作
             break;
           case 403:
             message = "拒绝访问(403)";
@@ -75,7 +75,7 @@ export class Request {
             console.log(message)
             ElMessage({
               message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
-                h('span', null, "服务器错误 :<")
+                h('span', null, "服务器错�? :<")
               ]),
             })
             break;
@@ -108,7 +108,7 @@ export class Request {
     );
   }
 
-  // 进一步封装请求方法
+  // 进一步封装请求方�?
   public request(config: AxiosRequestConfig): Promise<AxiosResponse> {
     return this.instance.request(config);
   }
@@ -147,12 +147,31 @@ export class Request {
 
 const request = new Request({})
 
+export const userLogin = (username: string, password: string) => {
+  return request.post('/user/login', {'username': username, 'password': password})
+}
+
+export const userRegister = (data: User) => {
+  return request.post('/user/register', {
+    "username": data.username,
+    "password": data.password,
+    "name": data.name,
+    "gender": data.gender,
+    "phone": data.phone,
+    "email": data.email
+  })
+}
+
+export const queryUser = (id: string) => {   
+  return request.get<User>(`/user/${Number(id)}`)
+}
+
 export const api = {
 
   code : {
     INFO_ERROR: 400,
     USERNAME_DUPLICATE: 401,
-    SUCCESS: 500,
+    SUCCESS: 1,
     SERVER_ERROR: 501,
     TIMEOUT: 502,
     BOOK_NOT_EXIST: 601,

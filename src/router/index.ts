@@ -19,24 +19,7 @@ const router = createRouter({
     }, 
     {
       path: '/register',
-      component: () => import('@/views/Register.vue'), 
-      children: [
-        {
-          path: '#',
-          name: 'input-name-gender',
-          component: () => import('@/views/NameGenderInputBox.vue')
-        },
-        {
-          path: '##',
-          name: 'input-email-phone',
-          component: () => import('@/views/EmailPhoneInputBox.vue')
-        },
-        {
-          path: '###',
-          name: 'input-username-password',
-          component: () => import('@/views/UsernamePasswordInputBox.vue')
-        },
-      ]
+      component: () => import('@/views/Register.vue'),
     },
     {
       path: '/about',
