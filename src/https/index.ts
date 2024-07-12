@@ -166,6 +166,20 @@ export const queryUser = (id: string) => {
   return request.get<User>(`/user/${Number(id)}`)
 }
 
+export const modifyUserInfo = (id: string, info: User) => {
+  return request.put(`/user/${id}`, {
+    "username": info.username,
+    "name": info.name,
+    "gender": info.gender,
+    "phone": info.phone,
+    "email": info.email 
+  })
+}
+
+export const queryUserId = (username: string) => {   
+  return request.get<User>(`/user/id/${username}`)
+}
+
 export const api = {
 
   code : {
@@ -181,7 +195,7 @@ export const api = {
     BORROW_NOT_EXIST: 605,
     RETURN_OVERDUE: 606,
     RETURN_DUPLICATE: 607,
-    ACCOUNT_NOT_EXIST: 701,
+    ACCOUNT_NOT_EXIST: 0,
     PASSWORD_ERROR: 702,
   },
   userLogin(username: string, password: string) {

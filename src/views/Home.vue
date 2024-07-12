@@ -18,8 +18,8 @@
     text 
     size="large" 
     type="primary" 
-    @click="">
-      {{ userStore.userInfo.username}}
+    @click="expandInfoDrawer">
+      {{ userStore.userInfo.username }}
     </el-button>
     <el-drawer v-model="drawer" title="I am the title" :with-header="false" size="50%">
       <UserPanel></UserPanel>
@@ -132,8 +132,14 @@ const tableData = ref<Array<Object>>([])
 const borrows= ref<Array<Borrow>>([])
 
 
+
+
 const onSubmit = () => {
   fetchAllBorrowRecords()
+}
+
+function expandInfoDrawer() {
+  drawer.value = true;
 }
 
 async function refreshBorrows() {

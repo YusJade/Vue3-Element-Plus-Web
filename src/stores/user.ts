@@ -4,17 +4,17 @@ import { api, userLogin, queryUser } from '../https'
 import { Message } from '@/utils/message';
 import type { User } from '@/type';
 
-// defineStore: Pinia µÄ×é¼ş»¯·ç¸ñ£¬ÒÔ setup µÄĞÎÊ½¶¨Òå store
+// defineStore: Pinia çš„ç»„ä»¶åŒ–é£æ ¼ï¼Œä»¥ setup çš„å½¢å¼å®šä¹‰ store
 export const useUserStore = defineStore('users', {
   state:  () => {
     return {
-      // ÓÃ»§ĞÅÏ¢
+      // ç”¨æˆ·ä¿¡æ¯
       userInfo: { } as User,
       isLogined: false as boolean,
     }
   },
   actions: {
-    // ¶¨Òå»ñÈ¡½Ó¿ÚÊı¾İµÄ action º¯Êı
+    // å®šä¹‰è·å–æ¥å£æ•°æ®çš„ action å‡½æ•°
     async login(username: string, password: string) {
       const res = await userLogin(username, password);
       this.userInfo = (await queryUser(res.data.data)).data.data;
@@ -24,7 +24,7 @@ export const useUserStore = defineStore('users', {
       }
       return res.data;
     },
-    // ¶¨Òå»ñÈ¡½Ó¿ÚÊı¾İµÄ action º¯Êı
+    // å®šä¹‰è·å–æ¥å£æ•°æ®çš„ action å‡½æ•°
     async logout() {
       this.userInfo = {
         userId: 0,
@@ -36,7 +36,7 @@ export const useUserStore = defineStore('users', {
         username: 'Unknown',
       };
       this.isLogined = false;
-      Message('ÍË³öµÇÂ¼');
+      Message('é€€å‡ºç™»å½•');
     },
   },
 })

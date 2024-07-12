@@ -1,39 +1,86 @@
 <template>
-  <span>Hi {{ btnTip }}!</span>
-  <el-button type="primary" text @click="logout">�˳���¼</el-button>
-  <el-button type="primary" text @click="onEditBtnClicked">�༭</el-button>
+  <span>Hi {{ userStore.userInfo.username }}!</span>
+  <el-button type="primary" text @click="logout">退出登录</el-button>
+  <el-button type="primary" text @click="onEditBtnClicked">{{ !isEditState ? "编辑" : "退出编辑" }}</el-button>
+  <el-button v-if="isEditState" type="primary" text @click="saveEdit">保存</el-button>
   <el-descriptions
-  title="�������"
+  title="个人面板"
   direction="vertical"
   :column="2"
   border
   >
-    <el-descriptions-item label="�û���">
-      <template v-if="!isEditState">
-        {{ user.username }}
-      </template>
-      <template v-else>
-        <el-input :v-model="user.username"></el-input>
-      </template>
+    <el-descriptions-item label="用户名">
+      <span v-if="!isEditState"> {{ userStore.userInfo.username }} </span>
+      <ValidatedInput v-else
+        size="small"
+        id="username"
+        :clearable="false"
+        :model-value="user.username"
+        :validate="validateUsernameLogined">
+      </ValidatedInput>
     </el-descriptions-item>
-    <el-descriptions-item label="�绰">{{ user.phone }}</el-descriptions-item>
-    <el-descriptions-item label="����" :span="2">{{ user.email }}</el-descriptions-item>
-    <el-descriptions-item label="����">
-      <el-tag size="small">{{ user.name }}</el-tag>
-      <el-tag size="small">{{ user.gender }}</el-tag>
+    <el-descriptions-item label="电话">
+      <span v-if="!isEditState"> {{ userStore.userInfo.phone }} </span>
+      <ValidatedInput v-else
+        size="small"
+        id="phone"
+        :clearable="false"
+        :model-value="user.phone"
+        :validate="validatePhone"
+      </ValidatedInput>
+    </el-descriptions-item>
+    <el-descriptions-item label="邮箱" :span="2">
+      <span v-if="!isEditState"> {{ userStore.userInfo.email }} </span>
+      <ValidatedInput v-else
+        size="small"
+        id="email"
+        :clearable="false"
+        :model-value="user.email"
+        :validate="validateEmail">
+      </ValidatedInput>
+    </el-descriptions-item>
+    <el-descriptions-item label="姓名">
+      <span v-if="!isEditState"> {{ userStore.userInfo.name }} </span>
+      <ValidatedInput v-else
+        size="small"
+        id="name"
+        :clearable="false"
+        :model-value="user.name">
+      </ValidatedInput>
+    </el-descriptions-item>
+    <el-descriptions-item label="性别">
+      <span v-if="!isEditState"> {{ userStore.userInfo.gender }} </span>
+      <el-select v-else
+          v-model="user.gender"
+          size="middle"
+          style="width: 240px"
+          placeholder="性别">
+          <el-option
+            v-for="item in genderOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"/>
+          </el-select>
     </el-descriptions-item>
   </el-descriptions>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { User } from '@/type';
+import { useUserStore } from '@/stores/user';
+import ValidatedInput from './ValidatedInput.vue';
+import router from '@/router';
+import { api, modifyUserInfo } from '@/https';
+import { validateEmail, validatePhone, validateUsername } from '@/utils/validator';
+import { queryUserId } from '../https';
 
-let isEditState = false;
-const btnTip = ref('��¼');
+let isEditState = ref(false);
+const btnTip = ref('登录');
 const drawer = ref(false);
+const userStore = useUserStore();
 const user = ref<User>({
-  id: 0,
+  userId: 0,
   email: 'Unknown',
   gender: 'Unknown',
   name: 'Unknown',
@@ -42,8 +89,52 @@ const user = ref<User>({
   username: 'Unknown'
 })
 
+const genderOptions = [
+  {
+    value: "男",
+    label: "男",
+  },
+  {
+    value: "女",
+    label: "女",
+  },
+]
+
+onMounted(() => {
+  if (userStore.isLogined) {
+    user.value = userStore.userInfo
+  }
+})
+
+const validateUsernameLogined = async (value: string) => {
+  const error = validateUsername(value);
+  if (error != '') {
+    return error;
+  }
+  const res = await queryUserId(value);
+  if (res.data.code == api.code.SUCCESS && res.data.data != user.value.userId) {
+    return '用户名已存在';
+  }
+  return '';
+}
+
+async function saveEdit() {
+  let res = await modifyUserInfo(userStore.userInfo.userId.toString(), user.value);
+  if (res.data.code == api.code.SUCCESS) {
+    userStore.userInfo = user.value; // 更新 pinia
+    isEditState.value = !isEditState.value; // 退出编辑
+    console.info("退出编辑模式");
+  }
+}
+
+function logout() {
+  userStore.logout();
+  location.reload();
+}
+
 function onEditBtnClicked() {
-  isEditState = !isEditState
+  isEditState.value = !isEditState.value;
+  console.info(isEditState.value ? "编辑模式" : "展示模式");
 }
 </script>
 

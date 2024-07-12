@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-2">
+  <div class="mb">
     <label v-if="label" :for="id" class="font-semibold text-gray-700">{{ label }}</label>
     <el-input
       v-model="inputValue"
@@ -39,7 +39,8 @@ const props = withDefaults(defineProps<{
   validate: (value: string) => string
 }>(), {
   validate: (value) => '',
-  showPassword: false
+  showPassword: false,
+  label: ''
 });
 
 const emit = defineEmits(['update:modelValue', 'on-validate']);
@@ -53,8 +54,8 @@ watch(inputValue, (newValue) => {
   validateInput(newValue);
 });
 
-const validateInput = (value: string) => {
-  errorMessage.value = props.validate(value) || '';
+const validateInput = async (value: string) => {
+  errorMessage.value = await props.validate(value) || '';
   successMessage.value = errorMessage.value == '' ? '有效' : ''; 
   emit('on-validate', props.id, errorMessage.value == '')
 };
