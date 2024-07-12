@@ -5,47 +5,25 @@
       <div class="visists">0 Visists</div>
     </div>
     <!-- <div class="nav"> -->
-    <el-button 
+    <el-button v-if="!userStore.isLogined"
     style="float: right;" 
     text 
     size="large" 
     type="primary" 
     @click="onBtnClick">
-      {{ btnTip }}
+      登录
+    </el-button>
+    <el-button v-else
+    style="float: right;" 
+    text 
+    size="large" 
+    type="primary" 
+    @click="">
+      {{ userStore.userInfo.username}}
     </el-button>
     <el-drawer v-model="drawer" title="I am the title" :with-header="false" size="50%">
-      <span>Hi {{ btnTip }}!</span>
-      <el-button type="primary" text @click="logout">退出登录</el-button>
-      <el-descriptions
-      title="个人面板"
-      direction="vertical"
-      :column="2"
-      border
-      >
-        <el-descriptions-item label="用户名">{{ user.username }}</el-descriptions-item>
-        <el-descriptions-item label="电话">{{ user.phone }}</el-descriptions-item>
-        <el-descriptions-item label="邮箱" :span="2">{{ user.email }}</el-descriptions-item>
-        <el-descriptions-item label="姓名">
-          <el-tag size="small">{{ user.name }}</el-tag>
-          <el-tag size="small">{{ user.gender }}</el-tag>
-        </el-descriptions-item>
-      </el-descriptions>
-      <el-form>
-        <el-form-item label="用户名">
-          <el-input ></el-input>
-        </el-form-item>
-        <el-form-item label="电话">
-          <el-input ></el-input>
-        </el-form-item>
-        <el-form-item label="邮箱">
-          <el-input ></el-input>
-        </el-form-item>
-        <el-form-item label="姓名">
-          <el-input ></el-input>
-        </el-form-item>
-        <el-button type="primary" @click="saveChanges">保存</el-button>
-      </el-form>
-    <Table :tableData="borrows"></Table>
+      <UserPanel></UserPanel>
+      <Table :tableData="borrows"></Table>
     </el-drawer>
     <!-- </div> -->
   </div>
@@ -91,7 +69,7 @@
         <button class="active">Books <p>{{ bookPage.totalSize }}</p></button>
       </div>
       <div class="result-item" v-for="(value, index) in bookPage.datas" :key="index">
-        <img src="https://via.placeholder.com/100" alt="Book Cover">
+        <!-- <img src="https://via.placeholder.com/100" alt="Book Cover"> -->
         <div>
           <h3><a href="#">{{ value.title }}</a></h3>
           <p>作者：{{ value.author }}</p>
@@ -122,32 +100,37 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from "vue-router"
 import request, { api } from "@/https";
 import { Book, Borrow, Page, User } from "@/type";
 import { storage } from '@/utils/storage';
 import Table from '@/components/Table.vue';
-import { create } from 'axios';
 import { Message } from '@/utils/message';
 import { formatDate } from '@/utils/date';
+import UserPanel from '@/components/UserPanel.vue';
+import { useUserStore } from '@/stores/user';
+import { ElButton } from 'element-plus';
 
-const btnTip = ref('登录')
-const drawer = ref(false)
+let isEditState = false;
+const btnTip = ref('登录');
+const drawer = ref(false);
+const userStore = useUserStore();
 const user = ref<User>({
-  id: -1,
-  email: 'Unknow',
-  gender: 'Unknow',
-  name: 'Unknow',
-  password: 'Unknow',
-  phone: 'Unknow',
-  username: 'Unknow'
-})
+  userId: 0,
+  email: 'Unknown',
+  gender: 'Unknown',
+  name: 'Unknown',
+  password: 'Unknown',
+  phone: 'Unknown',
+  username: 'Unknown',
+});
 const bookPage = ref<Page<Book>>({pageOn: 0, pageSize: 0, totalPage: 0, totalSize: 0, datas: []})
 const router = useRouter()
 const searchContent = ref("")
 const tableData = ref<Array<Object>>([])
 const borrows= ref<Array<Borrow>>([])
+
 
 const onSubmit = () => {
   fetchAllBorrowRecords()

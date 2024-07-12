@@ -20,7 +20,7 @@ export interface Page<T> {
  */
 export interface User {
   username: string;
-  created_at: Date;
+  created_at?: Date;
   email: string;
   gender: string;
   name: string;

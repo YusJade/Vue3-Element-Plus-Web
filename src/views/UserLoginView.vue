@@ -80,19 +80,20 @@ import { ref } from "vue"
 import { Message } from "@/utils/message"
 import { h } from 'vue'
 import { useUserStore } from "../stores/user"
+import { storeToRefs } from "pinia"
 
-const router = useRouter()
-const username = ref('')
-const password = ref('')
+const router = useRouter();
+const username = ref('');
+const password = ref('');
+const userStore = useUserStore();
 
-function onLoginBtnClick() {
-  await useUserStore.getUserInfo(username, password).then((response) => {
-    switch (response.code) {
-      case api.code.SUCCESS:
-        Message('登录成功');
-        router.push('/home')
-    }
-  })
+async function onLoginBtnClick() {
+  let response = await userStore.login(username.value, password.value);
+  switch (response.code) {
+    case api.code.SUCCESS:
+      Message('登录成功');
+      router.push('/home')
+  }
 }
 
 function onRegisterBtnClick() {

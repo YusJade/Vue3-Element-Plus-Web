@@ -1,16 +1,42 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { userLogin } from '../https'
+import { api, userLogin, queryUser } from '../https'
+import { Message } from '@/utils/message';
+import type { User } from '@/type';
 
 // defineStore: Pinia 的组件化风格，以 setup 的形式定义 store
-export const useUserStore = defineStore('user', () => {
-    // 定义管理用户数据的 state
-    const userInfo = ref({});
-    // 定义获取接口数据的 action 函数
-    const getUserInfo = async (username, password) => {
-      const res = await userLogin(username, password);
-      userInfo.value = res.data.data;
-      return res.data;
+export const useUserStore = defineStore('users', {
+  state:  () => {
+    return {
+      // 用户信息
+      userInfo: { } as User,
+      isLogined: false as boolean,
     }
-    return { userInfo, getUserInfo }
+  },
+  actions: {
+    // 定义获取接口数据的 action 函数
+    async login(username: string, password: string) {
+      const res = await userLogin(username, password);
+      this.userInfo = (await queryUser(res.data.data)).data.data;
+      console.info('from Pinia:', res);
+      if (res.data.code == api.code.SUCCESS) {
+        this.isLogined = true;
+      }
+      return res.data;
+    },
+    // 定义获取接口数据的 action 函数
+    async logout() {
+      this.userInfo = {
+        userId: 0,
+        email: 'Unknown',
+        gender: 'Unknown',
+        name: 'Unknown',
+        password: 'Unknown',
+        phone: 'Unknown',
+        username: 'Unknown',
+      };
+      this.isLogined = false;
+      Message('退出登录');
+    },
+  },
 })
