@@ -15,6 +15,39 @@ export interface Page<T> {
   datas: Array<T>
 }
 
+
+export interface InventoryPage {
+  endRow?: number;
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
+  isFirstPage?: boolean;
+  isLastPage?: boolean;
+  list?: BookInventory[];
+  navigateFirstPage?: number;
+  navigateLastPage?: number;
+  navigatepageNums?: number[];
+  navigatePages?: number;
+  nextPage?: number;
+  pageNum?: number;
+  pages?: number;
+  pageSize?: number;
+  prePage?: number;
+  size?: number;
+  startRow?: number;
+  total?: number;
+  [property: string]: any;
+}
+
+export interface BookInventory {
+  author?: string;
+  bookTitle?: string;
+  categoryId?: null;
+  inventoryId?: number;
+  publisher?: string;
+  quantity?: number;
+  [property: string]: any;
+}
+
 /**
  * User
  */

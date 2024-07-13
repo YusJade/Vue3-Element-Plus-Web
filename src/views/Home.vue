@@ -58,26 +58,28 @@
         color="#40E2A6"
         type="primary"
         plain  
-        @click="onSubmit">
+        @click="searchBook">
           搜索
         </el-button>
       </div>
     </el-form>
-    <div class="results-container" v-if="bookPage.datas.length">
-      <h2>Search Books On Z-Library. The World's Largest E-book Library.</h2>
-      <div class="tab-container">
-        <button class="active">Books <p>{{ bookPage.totalSize }}</p></button>
-      </div>
-      <div class="result-item" v-for="(value, index) in bookPage.datas" :key="index">
-        <!-- <img src="https://via.placeholder.com/100" alt="Book Cover"> -->
-        <div>
-          <h3><a href="#">{{ value.title }}</a></h3>
-          <p>作者：{{ value.author }}</p>
-          <p>出版社：{{ value.publisher }}</p>
-          <p>在库数目：{{ value.quantity }}</p>
-          <p>在库Id:{{ value.id }}</p>
+    <div class="results-container" v-if="bookPage.size">
+      <span class="font-sans text-2xl font-semibold">搜索结果</span>
+      <div class="result-item" v-for="(value, index) in bookPage.list" :key="index">
+        <div class="result-item-inner">
+          <span class="text-xl font-semibold">{{ value.bookTitle }}</span>
+          <div class="flex"> 
+            <div>
+              <div class="text-base text-muted-foreground">作者: {{ value.author }}</div>
+              <div class="text-base text-muted-foreground">出版社: {{ value.publisher }}</div>
+            </div>
+            <div>
+              <div class="text-base text-muted-foreground">在库数目: {{ value.quantity }}</div>
+              <div class="text-base text-muted-foreground">库存编号: {{ value.inventoryId }}</div>
+            </div>
+          </div>
         </div>
-        <el-button @click="borrow(value.id)" v-if="btnTip != '登录'">借阅</el-button>
+        <button class="bg-primary text-primary-foreground px-4 py-7 rounded-md hover:bg-primary/80">借阅</button>
       </div>
       <!-- <div class="result-item">
         <img src="https://via.placeholder.com/100" alt="Book Cover">
@@ -103,7 +105,7 @@
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from "vue-router"
 import request, { api } from "@/https";
-import { Book, Borrow, Page, User } from "@/type";
+import { Book, BookInventory, Borrow, InventoryPage, Page, User } from "@/type";
 import { storage } from '@/utils/storage';
 import Table from '@/components/Table.vue';
 import { Message } from '@/utils/message';
@@ -125,17 +127,20 @@ const user = ref<User>({
   phone: 'Unknown',
   username: 'Unknown',
 });
-const bookPage = ref<Page<Book>>({pageOn: 0, pageSize: 0, totalPage: 0, totalSize: 0, datas: []})
-const router = useRouter()
-const searchContent = ref("")
-const tableData = ref<Array<Object>>([])
-const borrows= ref<Array<Borrow>>([])
+const bookPage = ref<InventoryPage>({size: 0});
+const router = useRouter();
+const searchContent = ref("");
+const tableData = ref<Array<Object>>([]);
+const borrows= ref<Array<Borrow>>([]);
 
 
 
 
-const onSubmit = () => {
-  fetchAllBorrowRecords()
+async function searchBook() {
+  let response = await request.get<InventoryPage>('/book-inventory/paged', { params: {
+      'keyword': searchContent.value
+    }});
+  bookPage.value = response.data.data
 }
 
 function expandInfoDrawer() {
@@ -163,14 +168,16 @@ function logout() {
 
 async function fetchAllBorrowRecords() {
   try {
-    let response = await request.get<Page<Book>>('/book', {params: {'keyword': searchContent.value}})
-    bookPage.value = response.data.result
-    tableData.value = bookPage.value.datas.map(item => ({
-      // '编号': item.id,
-      // '创建日期': item.created_at,
-      id: item.id,
-      date: item.created_at,
-    }))
+    let response = await request.get<InventoryPage>('/book-inventory/paged', { params: {
+      'keyword': searchContent.value
+    }});
+    bookPage.value = response.data.data
+    // tableData.value = bookPage.value.datas.map(item => ({
+    //   // '编号': item.id,
+    //   // '创建日期': item.created_at,
+    //   id: item.id,
+    //   date: item.created_at,
+    // }))
     console.log('图书信息')
     console.log(bookPage.value)
     console.log('图书信息提取')
@@ -250,7 +257,7 @@ async function borrow(bookId: number) {
   width: 60%;
   vertical-align: top;
   padding-top: 20vh;
-  padding-bottom: 35vh
+  padding-bottom: 45vh
 }
 
 .footer {
@@ -287,33 +294,26 @@ async function borrow(bookId: number) {
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .results-container h2 {
   text-align: center;
   color: #4CAF50;
 }
+
 .result-item {
   display: flex;
-  padding: 20px;
-  border-bottom: 1px solid #eee;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 0px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.result-item:last-child {
-  border-bottom: none;
-}
-.result-item img {
-  max-width: 100px;
-  margin-right: 20px;
-}
+
 .result-item div {
   flex: 1;
 }
-.result-item h3 {
-  margin: 0;
-  font-size: 18px;
-  color: #333;
-}
-.result-item p {
-  margin: 5px 0;
-  font-size: 14px;
-  color: #777;
+
+.result-item-inner {
+  margin: 20px;
 }
 </style>
