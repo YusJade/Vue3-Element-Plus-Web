@@ -81,31 +81,36 @@
         </div>
         <button type="button" @click="openInventory(value)">借阅</button>
       </div>
-      <el-dialog v-model="inventoryDialogVisable" :title="`库存信息`" width="700">
-          <el-table :data="inventoryData">
-            <el-table-column property="bookId" label="图书编号" width="100" />
-            <el-table-column property="isBorrowed" label="可用" width="100" />
-            <el-table-column
-              prop="isBorrowed"
-              label="状态"
-              width="100"
-              :filters="[
-                { text: '可借阅', value: false },
-                { text: '不可用', value: true },
-              ]"
-              :filter-method="filterTag"
-              filter-placement="bottom-end"
-            >
-              <template #default="scope">
-                <el-tag v-if="!scope.row.isBorrowed" type="success">
-                  可借阅
-                </el-tag>
-                <el-tag v-else type="info">
-                  不可用
-                </el-tag>
-              </template>
-            </el-table-column>
-          </el-table>
+      <el-dialog v-model="inventoryDialogVisable" title="库存信息" width="400">
+        <p>{{ latestViewInventory.bookTitle }}</p>
+        <el-table :data="inventoryData">
+          <el-table-column property="bookId" label="图书编号" width="100" />
+          <el-table-column
+            prop="isBorrowed"
+            label="状态"
+            width="100"
+            :filters="[
+              { text: '可借阅', value: false },
+              { text: '不可用', value: true },
+            ]"
+            :filter-method="filterTag"
+            filter-placement="bottom-end"
+          >
+            <template #default="scope">
+              <el-tag v-if="!scope.row.isBorrowed" type="success">
+                可借阅
+              </el-tag>
+              <el-tag v-else type="info">
+                不可用
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作">
+            <template #default="scope">
+              <el-button :disabled="isBorrowBtnDisabled(scope.row)">借阅</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
       </el-dialog>
       <!-- <div class="result-item">
         <img src="https://via.placeholder.com/100" alt="Book Cover">
@@ -161,15 +166,20 @@ const tableData = ref<Array<Object>>([]);
 const borrows= ref<Array<Borrow>>([]);
 const inventoryDialogVisable = ref<boolean>(false);
 const inventoryData = ref<Array<Book>>([]);
+let latestViewInventory: BookInventory = {};
+
+function isBorrowBtnDisabled(row: Book) {
+  return row.isBorrowed || row.isDiscarded;
+}
 
 const filterTag = (value: boolean, row: Book) => {
   return row.isBorrowed === value
 }
 
-
 async function openInventory(inventory: BookInventory) {
   console.log("打开库存信息对话框");
   inventoryDialogVisable.value = true;
+  latestViewInventory =  inventory;
   const res = await request.get<Array<Book>>("/book/list", {
     params: { 'inventoryId': inventory.inventoryId }
   });
