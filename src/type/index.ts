@@ -41,7 +41,7 @@ export interface InventoryPage {
 export interface BookInventory {
   author?: string;
   bookTitle?: string;
-  categoryId?: null;
+  categoryId?: number;
   inventoryId?: number;
   publisher?: string;
   quantity?: number;
@@ -66,14 +66,13 @@ export interface User {
  * Book
  */
 export interface Book {
-  id: number;
-  title?: string;
-  author?: string;
-  category_id?: number;
-  publisher?: string;
-  quantity?: number;
-  created_at?: Date;
+  bookId: number;
+  inventoryId: number;
+  isBorrowed: boolean;
+  isDiscarded: boolean;
+  [property: string]: any;
 }
+
 
 /**
  * ApifoxModel

@@ -79,8 +79,34 @@
             </div>
           </div>
         </div>
-        <button class="bg-primary text-primary-foreground px-4 py-7 rounded-md hover:bg-primary/80">借阅</button>
+        <button type="button" @click="openInventory(value)">借阅</button>
       </div>
+      <el-dialog v-model="inventoryDialogVisable" :title="`库存信息`" width="700">
+          <el-table :data="inventoryData">
+            <el-table-column property="bookId" label="图书编号" width="100" />
+            <el-table-column property="isBorrowed" label="可用" width="100" />
+            <el-table-column
+              prop="isBorrowed"
+              label="状态"
+              width="100"
+              :filters="[
+                { text: '可借阅', value: false },
+                { text: '不可用', value: true },
+              ]"
+              :filter-method="filterTag"
+              filter-placement="bottom-end"
+            >
+              <template #default="scope">
+                <el-tag v-if="!scope.row.isBorrowed" type="success">
+                  可借阅
+                </el-tag>
+                <el-tag v-else type="info">
+                  不可用
+                </el-tag>
+              </template>
+            </el-table-column>
+          </el-table>
+      </el-dialog>
       <!-- <div class="result-item">
         <img src="https://via.placeholder.com/100" alt="Book Cover">
         <div>
@@ -113,6 +139,7 @@ import { formatDate } from '@/utils/date';
 import UserPanel from '@/components/UserPanel.vue';
 import { useUserStore } from '@/stores/user';
 import { ElButton } from 'element-plus';
+import { info } from 'console';
 
 let isEditState = false;
 const btnTip = ref('登录');
@@ -132,8 +159,23 @@ const router = useRouter();
 const searchContent = ref("");
 const tableData = ref<Array<Object>>([]);
 const borrows= ref<Array<Borrow>>([]);
+const inventoryDialogVisable = ref<boolean>(false);
+const inventoryData = ref<Array<Book>>([]);
+
+const filterTag = (value: boolean, row: Book) => {
+  return row.isBorrowed === value
+}
 
 
+async function openInventory(inventory: BookInventory) {
+  console.log("打开库存信息对话框");
+  inventoryDialogVisable.value = true;
+  const res = await request.get<Array<Book>>("/book/list", {
+    params: { 'inventoryId': inventory.inventoryId }
+  });
+  inventoryData.value = res.data.data;
+  console.info(inventoryData);
+}
 
 
 async function searchBook() {
