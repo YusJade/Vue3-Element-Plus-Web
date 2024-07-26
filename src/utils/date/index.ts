@@ -1,7 +1,19 @@
 export function formatDate(date: Date) {
-  const year = date.getFullYear
-  const month = date.getMonth
-  const day = date.getDay
+  const year = date.getFullYear()
+  const month = date.getMonth() + 1
+  const day = date.getDay()
+  console.log(`日期格式化(${date} -> ${`${year}年${month}月${day}日`})`)
+  return `${year}年${month}月${day}日`
+}
 
-  return `${year}��${month}��${day}��`
+export function formatDateFromStr(dateStr: string) {
+  if (dateStr == null) {
+    return ''
+  }
+  const date = new Date(dateStr)
+  const year = date.getFullYear()
+  const month = date.getMonth() + 1
+  const day = date.getDay()
+  console.log(`日期格式化(${dateStr} -> ${`${year}年${month}月${day}日`})`)
+  return `${year}年${month}月${day}日`
 }

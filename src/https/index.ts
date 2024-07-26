@@ -180,6 +180,33 @@ export const queryUserId = (username: string) => {
   return request.get<User>(`/user/id/${username}`)
 }
 
+export const addBorrowRecord = (userId: number, bookId: number) => {
+  return request.post('/borrow', {
+    bookId: bookId,
+    userId: userId
+  })
+}
+
+export const renewBorrowRecord = (recordId: number) => {
+  return request.put(`/borrow/${recordId}/renew`)
+}
+
+export const returnBorrowRecord = () => {
+
+}
+
+export const queryBorrowRecordList = (recordId: number, userId: number, bookId: number, excludeFinished: boolean) => {
+  return request.get<Array<Borrow>>(`/borrow/list`, {
+    params: {
+      recordId: recordId,
+      userId: userId,
+      bookId: bookId,
+      excludeFinished: excludeFinished
+    }
+  })
+}
+
+
 export const api = {
 
   code : {

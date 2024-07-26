@@ -75,14 +75,14 @@ export interface Book {
 
 
 /**
- * ApifoxModel
+ * Borrow
  */
 export interface Borrow {
-  book_id?: number;
-  borrow_date?: Date;
-  id: number;
-  really_return_date?: Date;
-  return_date?: Date;
-  user_id?: number;
+  actualReturnDate?: Date;
+  bookId?: number;
+  borrowdate?: Date;
+  oughtReturnDate?: Date;
+  recordId: number;
+  userId?: number;
   [property: string]: any;
 }

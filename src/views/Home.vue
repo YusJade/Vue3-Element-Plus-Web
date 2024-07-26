@@ -21,11 +21,11 @@
     @click="expandInfoDrawer">
       {{ userStore.userInfo.username }}
     </el-button>
+
     <el-drawer v-model="drawer" title="I am the title" :with-header="false" size="50%">
       <UserPanel></UserPanel>
-      <Table :tableData="borrows"></Table>
+      <TableC v-bind="tableConfig"></TableC>
     </el-drawer>
-    <!-- </div> -->
   </div>
   <div class="main">
     <div
@@ -107,7 +107,7 @@
           </el-table-column>
           <el-table-column label="操作">
             <template #default="scope">
-              <el-button :disabled="isBorrowBtnDisabled(scope.row)">借阅</el-button>
+              <el-button @click="borrow(scope.row.bookId)" :disabled="isBorrowBtnDisabled(scope.row)">借阅</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -133,18 +133,20 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, toRaw } from 'vue';
 import { useRouter } from "vue-router"
-import request, { api } from "@/https";
+import request, { api, addBorrowRecord, queryBorrowRecordList, renewBorrowRecord } from "@/https";
 import { Book, BookInventory, Borrow, InventoryPage, Page, User } from "@/type";
 import { storage } from '@/utils/storage';
-import Table from '@/components/Table.vue';
+import { TableConfigInterface } from '@/components/TableC.vue'
+import TableC from '@/components/TableC.vue';
 import { Message } from '@/utils/message';
-import { formatDate } from '@/utils/date';
+import { formatDate, formatDateFromStr } from '@/utils/date';
 import UserPanel from '@/components/UserPanel.vue';
 import { useUserStore } from '@/stores/user';
 import { ElButton } from 'element-plus';
 import { info } from 'console';
+import { fa, ro } from 'element-plus/es/locale';
 
 let isEditState = false;
 const btnTip = ref('登录');
@@ -167,6 +169,69 @@ const borrows= ref<Array<Borrow>>([]);
 const inventoryDialogVisable = ref<boolean>(false);
 const inventoryData = ref<Array<Book>>([]);
 let latestViewInventory: BookInventory = {};
+
+const tableConfig: TableConfigInterface = {
+  api: `/borrow/list?userId=${userStore.userInfo.userId}`,
+  columns: [
+    {
+      prop: 'recordId',
+      label: '记录编号'
+    },
+    {
+      prop: 'bookId',
+      label: '图书编号'
+    },
+    {
+      prop: 'borrowDate',
+      label: '借阅日期',
+      formatter: formatDateFromStr
+    },
+    {
+      prop: 'oughtReturnDate',
+      label: '截止日期',
+      formatter: formatDateFromStr
+    },
+    {
+      prop: 'actualReturnDate',
+      label: '归还日期',
+      formatter: formatDateFromStr
+    },
+  ],
+  operation: {
+    columns: [
+      {
+        click: () => { Message('归还') },
+        text: '归还',
+        icon: 'sun',
+        visible: (row: Borrow) => {
+          row = toRaw(row)
+          // console.info(row.actualReturnDate)
+          return row.actualReturnDate == null 
+        },
+      },
+      {
+        click: async (row: Borrow) => { 
+          Message('续借') 
+          row = toRaw(row)
+          const response = await renewBorrowRecord(row.recordId)
+          Message(response.data.msg)
+        },
+        text: '续借',
+        icon: 'sunrise',
+        visible: (row: Borrow) => {
+          row = toRaw(row)
+          // console.info(row.actualReturnDate)
+          return row.actualReturnDate == null 
+        }
+      },
+    ],
+    width: 70,
+  }
+}
+
+async function borrow(bookId: number) {
+  addBorrowRecord(userStore.userInfo.userId, bookId);
+}
 
 function isBorrowBtnDisabled(row: Book) {
   return row.isBorrowed || row.isDiscarded;
@@ -191,12 +256,15 @@ async function openInventory(inventory: BookInventory) {
 async function searchBook() {
   let response = await request.get<InventoryPage>('/book-inventory/paged', { params: {
       'keyword': searchContent.value
-    }});
+    }})
   bookPage.value = response.data.data
 }
 
-function expandInfoDrawer() {
-  drawer.value = true;
+
+async function expandInfoDrawer() {
+  drawer.value = true
+  const res = await queryBorrowRecordList(null, userStore.userInfo.userId, null, false)
+  borrows.value = res.data.data
 }
 
 async function refreshBorrows() {
@@ -248,11 +316,6 @@ async function onBtnClick() {
   }
 } 
 
-async function borrow(bookId: number) {
-  let response = await api.addBorrow(Number(storage.get('userId')), bookId)
-  Message(response.data.msg)
-  refreshBorrows()
-}
 
 </script>
 

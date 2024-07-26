@@ -91,8 +91,11 @@ async function onLoginBtnClick() {
   let response = await userStore.login(username.value, password.value);
   switch (response.code) {
     case api.code.SUCCESS:
-      Message('登录成功');
+      Message('登录成功')
       router.push('/home')
+      break
+    default:
+      Message(response.msg)
   }
 }
 
