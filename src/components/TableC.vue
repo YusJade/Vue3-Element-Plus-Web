@@ -64,8 +64,8 @@
                 style="margin-right: 4px"
               >
                 <!-- <i v-if="item.icon" :class="item.icon"></i> -->
-                <el-icon>
-                  <component :is="item.icon" v-if="item.icon"></component>
+                <el-icon v-if="item.icon">
+                  <component :is="item.icon"></component>
                 </el-icon>
                 {{ item.text }}
               </el-button>

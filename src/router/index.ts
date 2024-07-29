@@ -6,6 +6,16 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/workspace',
+      component: () => import('@/views/WorkSpace.vue'),
+      children: [
+        {
+          path: 'inventory-manage',
+          component: () => import('@/views/InventoryManage.vue'),
+        },  
+      ]
+    },
+    {
       path: '/',
       component: HomeView
     },
