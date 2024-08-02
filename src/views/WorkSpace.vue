@@ -9,7 +9,7 @@
             </template>
             <el-menu-item-group title="库存管理">
               <el-menu-item index="/workspace/inventory-manage">书库管理</el-menu-item>
-              <el-menu-item index="1-3-2">出入库</el-menu-item>
+              <el-menu-item index="/workspace/book-manage">图书管理</el-menu-item>
             </el-menu-item-group>
             <el-menu-item-group title="查询与统计">
               <el-menu-item index="1-4-1">信息查询</el-menu-item>

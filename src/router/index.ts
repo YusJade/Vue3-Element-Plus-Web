@@ -10,8 +10,12 @@ const router = createRouter({
       component: () => import('@/views/WorkSpace.vue'),
       children: [
         {
-          path: 'inventory-manage',
+          path: '/workspace/inventory-manage',
           component: () => import('@/views/InventoryManage.vue'),
+        },
+        {
+          path: '/workspace/book-manage',
+          component: () => import('@/views/BookManage.vue'),
         },  
       ]
     },

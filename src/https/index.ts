@@ -1,5 +1,5 @@
 // 接口封装
-import { Borrow, type User } from '@/type';
+import { Borrow, type BookInventory, type User } from '@/type';
 import axios from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { TIMEOUT } from 'dns/promises';
@@ -193,6 +193,16 @@ export const renewBorrowRecord = (recordId: number) => {
 
 export const returnBorrowRecord = () => {
 
+}
+
+/** 修改库存信息 */
+export const modifyBookInventory = (record: BookInventory) => {
+  return request.put(`/book-inventory/${record.inventoryId}`, record) 
+}
+
+/** 删除库存 */
+export const removeBookInventory = (id: number) => {
+  return request.delete(`/book-inventory/${id}`)
 }
 
 export const queryBorrowRecordList = (recordId: number, userId: number, bookId: number, excludeFinished: boolean) => {
