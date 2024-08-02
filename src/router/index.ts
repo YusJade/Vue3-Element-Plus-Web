@@ -16,6 +16,10 @@ const router = createRouter({
         {
           path: '/workspace/book-manage',
           component: () => import('@/views/BookManage.vue'),
+        },
+        {
+          path: '/workspace/user-manage',
+          component: () => import('@/views/UserManage.vue'),
         },  
       ]
     },

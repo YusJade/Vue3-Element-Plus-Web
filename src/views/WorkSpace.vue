@@ -22,7 +22,7 @@
             </template>
             <el-menu-item-group>
               <template #title></template>
-              <el-menu-item index="2-1">读者管理</el-menu-item>
+              <el-menu-item index="/workspace/user-manage">读者管理</el-menu-item>
               <el-menu-item index="2-2">授权设定</el-menu-item>
             </el-menu-item-group>
             <el-menu-item-group title="">
