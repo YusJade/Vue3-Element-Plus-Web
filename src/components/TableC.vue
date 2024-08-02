@@ -161,7 +161,7 @@ export interface TableConfigInterface {
 
 const props = withDefaults(defineProps<TableConfigInterface>(), {
   rowKey: 'id',
-  layout: 'prev, pager, next, total'
+  layout: 'prev, pager, next, total',
 })
 const pagination = ref({
   currentPage: 1,

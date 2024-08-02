@@ -1,25 +1,29 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/Home.vue'
 import UserLoginView from '../views/UserLoginView.vue'
+import WorkSpace from '@/views/WorkSpace.vue'
+import InventoryManage from '@/views/InventoryManage.vue'
+import BookManage from '@/views/BookManage.vue'
+import UserManage from '@/views/UserManage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/workspace',
-      component: () => import('@/views/WorkSpace.vue'),
+      component: WorkSpace,
       children: [
         {
           path: '/workspace/inventory-manage',
-          component: () => import('@/views/InventoryManage.vue'),
+          component: InventoryManage,
         },
         {
           path: '/workspace/book-manage',
-          component: () => import('@/views/BookManage.vue'),
+          component: BookManage,
         },
         {
           path: '/workspace/user-manage',
-          component: () => import('@/views/UserManage.vue'),
+          component: UserManage,
         },  
       ]
     },
