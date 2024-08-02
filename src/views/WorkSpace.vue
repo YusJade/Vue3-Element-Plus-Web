@@ -16,13 +16,16 @@
               <el-menu-item index="1-4-1">数据统计</el-menu-item>
             </el-menu-item-group>
           </el-sub-menu>
-          <el-sub-menu index="2">
+          <el-menu-item index="/workspace/user-manage">
+            <el-icon><User /></el-icon>
+            读者管理
+          </el-menu-item>
+          <!-- <el-sub-menu index="2">
             <template #title>
               <el-icon><icon-menu /></el-icon>读者管理
             </template>
             <el-menu-item-group>
               <template #title></template>
-              <el-menu-item index="/workspace/user-manage">读者管理</el-menu-item>
               <el-menu-item index="2-2">授权设定</el-menu-item>
             </el-menu-item-group>
             <el-menu-item-group title="">
@@ -31,7 +34,7 @@
             <el-menu-item-group title="">
               <el-menu-item index="2-4">权限管理</el-menu-item>
             </el-menu-item-group>
-          </el-sub-menu>
+          </el-sub-menu> -->
           <el-sub-menu index="3">
             <template #title>
               <el-icon><setting /></el-icon>借阅管理
