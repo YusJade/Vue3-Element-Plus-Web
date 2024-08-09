@@ -13,83 +13,29 @@
           Firefly-Library
         </div>
       </div>
-      
+
       <!-- 注册表单 -->
       <form>
         <h2 style="font-size: 1.50rem; font-weight: 600; color: #62646B;">用户注册</h2>
-        <ValidatedInput
-          label="用户名"
-          id="username"
-          v-model="username"
-          placeholder="用户名"
-          clearable="true"
-          :validate="validateUsername"
-          @on-validate="handleOnValidate"
-        />
-        <ValidatedInput
-          label="邮箱"
-          id="email"
-          v-model="email"
-          placeholder="邮箱"
-          :clearable="true"
-          :validate="validateEmail"
-          @on-validate="handleOnValidate"
-        />
-        <ValidatedInput
-          label="电话（可选）"
-          id="phone"
-          v-model="email"
-          placeholder="电话"
-          :clearable="true"
-          :validate="validatePhone"
-          @on-validate="handleOnValidate"
-        />
-        <ValidatedInput
-          label="姓名（可选）"
-          id="name"
-          v-model="email"
-          placeholder="姓名"
-          :clearable="true"
-        />
+        <ValidatedInput label="用户名" id="username" v-model="username" placeholder="用户名" clearable="true"
+          :validate="validateUsername" @on-validate="handleOnValidate" />
+        <ValidatedInput label="邮箱" id="email" v-model="email" placeholder="邮箱" :clearable="true"
+          :validate="validateEmail" @on-validate="handleOnValidate" />
+        <ValidatedInput label="电话（可选）" id="phone" v-model="phone" placeholder="电话" :clearable="true"
+          :validate="validatePhone" @on-validate="handleOnValidate" />
+        <ValidatedInput label="姓名（可选）" id="name" v-model="name" placeholder="姓名" :clearable="true" />
         <div class="mb-2">
           <label for="username" class="block font-semibold text-gray-700">性别</label>
-          <el-select
-          v-model="gender"
-          size="middle"
-          style="width: 240px"
-          placeholder="性别">
-          <el-option
-            v-for="item in genderOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"/>
+          <el-select v-model="gender" size="middle" style="width: 240px" placeholder="性别">
+            <el-option v-for="item in genderOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </div>
-        <ValidatedInput
-          label="密码"
-          id="password"
-          v-model="password"
-          placeholder="密码"
-          :clearable="true"
-          :validate="validatePassword"
-          @on-validate="handleOnValidate"
-          :show-password="true"
-        />
-        <div class="mb-4">
-          <ValidatedInput
-            label="确认密码"
-            id="confirmPassword"
-            v-model="confirmPassword"
-            placeholder="确认密码"
-            :clearable="true"
-            :validate="validateConfrimPassword"
-            @on-validate="handleOnValidate"
-            :show-password="true"
-          />
-        </div>
-        <button type="button" 
-          @click="onRegisterBtnClicked" 
-          :class="{'disabled-button': !isValidState, 'login-btn': isValidState}">注册</button>
+        <ValidatedInput label="密码" id="password" v-model="password" placeholder="密码" :clearable="true"
+          :validate="validatePassword" @on-validate="handleOnValidate" :show-password="true" />
+        <ValidatedInput label="确认密码" id="confirmPassword" v-model="confirmPassword" placeholder="确认密码" :clearable="true"
+          :validate="validateConfrimPassword" @on-validate="handleOnValidate" :show-password="true" />
+        <button type="button" @click="onRegisterBtnClicked"
+          :class="{ 'disabled-button': !isValidState, 'login-btn': isValidState }">注册</button>
       </form>
       <!-- 返回登录界面 -->
       <div style="margin-top: 1rem; text-align: center;">
@@ -180,7 +126,7 @@ const onRegisterBtnClicked = () => {
       if (response.data.code == api.code.SUCCESS) {
         Message('注册成功！');
       }
-  })
+    })
 }
 
 const onLoginBtnClicked = () => {
@@ -197,7 +143,7 @@ const genderOptions = [
     label: "女",
   },
 ]
-</script >
+</script>
 
 <style scoped>
 @keyframes fadeIn {
@@ -205,6 +151,7 @@ const genderOptions = [
     opacity: 0;
     transform: translateY(300px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -215,6 +162,7 @@ const genderOptions = [
   from {
     opacity: 0.4;
   }
+
   to {
     opacity: 1;
   }

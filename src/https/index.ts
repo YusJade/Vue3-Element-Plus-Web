@@ -53,12 +53,12 @@ export class Request {
             console.log(message)
             ElMessage({
               message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
-                h('span', null, "服务器错�? :<")
+                h('span', null, "服务器错误:<")
               ]),
             })
             break;
           case 401:
-            message = "未授权，请重新登�?(401)";
+            message = "未授权，请重新登录(401)";
             // 这里可以做清�? storage 并跳转到登录页的操作
             break;
           case 403:
@@ -75,7 +75,7 @@ export class Request {
             console.log(message)
             ElMessage({
               message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
-                h('span', null, "服务器错�? :<")
+                h('span', null, "服务器错误 :<")
               ]),
             })
             break;
@@ -148,7 +148,7 @@ export class Request {
 const request = new Request({})
 
 export const userLogin = (username: string, password: string) => {
-  return request.post('/user/login', {'username': username, 'password': password})
+  return request.post('/user/login', { 'username': username, 'password': password })
 }
 
 export const userRegister = (data: User) => {
@@ -162,7 +162,7 @@ export const userRegister = (data: User) => {
   })
 }
 
-export const queryUser = (id: string) => {   
+export const queryUser = (id: string) => {
   return request.get<User>(`/user/${Number(id)}`)
 }
 
@@ -172,11 +172,11 @@ export const modifyUserInfo = (id: string, info: User) => {
     "name": info.name,
     "gender": info.gender,
     "phone": info.phone,
-    "email": info.email 
+    "email": info.email
   })
 }
 
-export const queryUserId = (username: string) => {   
+export const queryUserId = (username: string) => {
   return request.get<User>(`/user/id/${username}`)
 }
 
@@ -197,7 +197,7 @@ export const returnBorrowRecord = () => {
 
 /** 修改库存信息 */
 export const modifyBookInventory = (record: BookInventory) => {
-  return request.put(`/book-inventory/${record.inventoryId}`, record) 
+  return request.put(`/book-inventory/${record.inventoryId}`, record)
 }
 
 /** 删除库存 */
@@ -219,7 +219,7 @@ export const queryBorrowRecordList = (recordId: number, userId: number, bookId: 
 
 export const api = {
 
-  code : {
+  code: {
     INFO_ERROR: 400,
     USERNAME_DUPLICATE: 401,
     SUCCESS: 1,
@@ -236,7 +236,7 @@ export const api = {
     PASSWORD_ERROR: 702,
   },
   userLogin(username: string, password: string) {
-    return request.post('/user/login', {'username': username, 'password': password})
+    return request.post('/user/login', { 'username': username, 'password': password })
   },
   userRegister(data: User) {
     return request.post('/user/register', {
@@ -249,7 +249,7 @@ export const api = {
     })
   },
   queryUser(id: string) {
-    
+
     return request.get<User>(`/user/${Number(id)}`)
   },
   queryBorrow(id: string) {
