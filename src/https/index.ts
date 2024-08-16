@@ -166,7 +166,7 @@ export const queryUser = (id: string) => {
   return request.get<User>(`/user/${Number(id)}`)
 }
 
-export const modifyUserInfo = (id: string, info: User) => {
+export const updateUserInfo = (id: string, info: User) => {
   return request.put(`/user/${id}`, {
     "username": info.username,
     "name": info.name,
@@ -178,6 +178,25 @@ export const modifyUserInfo = (id: string, info: User) => {
 
 export const queryUserId = (username: string) => {
   return request.get<User>(`/user/id/${username}`)
+}
+
+
+/**
+ * 删除借阅记录
+ * @param recordId 记录Id
+ * @returns 
+ */
+export const removeBorrowRecord = (recordId: number) => {
+  return request.delete(`/borrow/${recordId}`)
+}
+
+/**
+ * 保存对借阅记录的修改
+ * @param recordId 借阅记录
+ * @param record 记录修改内容
+ */
+export const updateBorrowRecord = (recordId: number, record: Borrow) => {
+  return request.put(`/borrow/${recordId}`, record)
 }
 
 export const addBorrowRecord = (userId: number, bookId: number) => {
@@ -196,7 +215,7 @@ export const returnBorrowRecord = () => {
 }
 
 /** 修改库存信息 */
-export const modifyBookInventory = (record: BookInventory) => {
+export const updateBookInventory = (record: BookInventory) => {
   return request.put(`/book-inventory/${record.inventoryId}`, record)
 }
 

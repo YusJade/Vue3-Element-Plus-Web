@@ -43,7 +43,7 @@
 <script lang="ts" setup>
 import TableC from '@/components/TableC.vue'
 import { TableConfigInterface } from '@/components/TableC.vue'
-import { modifyBookInventory, removeBookInventory } from '@/https';
+import { updateBookInventory, removeBookInventory } from '@/https';
 import { Book, BookInventory } from '@/type'
 import { Message } from '@/utils/message';
 import { ElDialog } from 'element-plus';
@@ -88,25 +88,25 @@ const tableConfig: TableConfigInterface = {
   operation: {
     columns: [
       {
-        click: (row: BookInventory) => { 
+        click: (row: BookInventory) => {
           inventoryInfoSelected.value = toRaw(row)
-          editDialogVisable.value = true 
-          Message('编辑库存信息') 
+          editDialogVisable.value = true
+          Message('编辑库存信息')
         },
         text: '编辑',
         // icon: '',
         type: 'primary'
       },
       {
-        click: () => {},
+        click: () => { },
         text: '出入库',
         type: 'warning'
       },
       {
-        click: (row: BookInventory) => { 
+        click: (row: BookInventory) => {
           inventoryInfoSelected.value = toRaw(row)
-          removeDialogVisable.value = true 
-          Message('删除库存信息') 
+          removeDialogVisable.value = true
+          Message('删除库存信息')
         },
         text: '删除',
         type: 'danger'
@@ -116,7 +116,7 @@ const tableConfig: TableConfigInterface = {
 }
 
 const saveInventoryEdit = async () => {
-  const respone = await modifyBookInventory(inventoryInfoSelected.value)
+  const respone = await updateBookInventory(inventoryInfoSelected.value)
   Message(respone.data.msg)
   if (respone.data.code == 1) {
     editDialogVisable.value = false
@@ -131,5 +131,4 @@ const removeInventory = async () => {
 
 </script>
 
-<style>
-</style>
+<style></style>

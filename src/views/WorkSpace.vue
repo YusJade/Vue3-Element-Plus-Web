@@ -5,7 +5,9 @@
         <el-menu :default-openeds="['1', '2', '3']" :router="true">
           <el-sub-menu index="1">
             <template #title>
-              <el-icon><message /></el-icon>图书管理
+              <el-icon>
+                <message />
+              </el-icon>图书管理
             </template>
             <el-menu-item-group title="库存管理">
               <el-menu-item index="/workspace/inventory-manage">书库管理</el-menu-item>
@@ -17,7 +19,9 @@
             </el-menu-item-group>
           </el-sub-menu>
           <el-menu-item index="/workspace/user-manage">
-            <el-icon><User /></el-icon>
+            <el-icon>
+              <User />
+            </el-icon>
             读者管理
           </el-menu-item>
           <!-- <el-sub-menu index="2">
@@ -37,11 +41,13 @@
           </el-sub-menu> -->
           <el-sub-menu index="3">
             <template #title>
-              <el-icon><setting /></el-icon>借阅管理
+              <el-icon>
+                <setting />
+              </el-icon>借阅管理
             </template>
             <el-menu-item-group>
               <!-- <template #title>Group 1</template> -->
-              <el-menu-item index="3-1">历史记录</el-menu-item>
+              <el-menu-item index="/workspace/borrow-record-manage">历史记录</el-menu-item>
               <el-menu-item index="3-2">逾期不还管理</el-menu-item>
             </el-menu-item-group>
           </el-sub-menu>
@@ -93,21 +99,25 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
 <style scoped>
 .layout-container-demo .el-header {
   position: relative;
-  background-image: -webkit-linear-gradient(10deg, #A0FAFF, #E1F59A); 
+  background-image: -webkit-linear-gradient(10deg, #A0FAFF, #E1F59A);
   /* background-color: var(--el-color-primary-light-7); */
   color: var(--el-text-color-primary);
 }
+
 .layout-container-demo .el-aside {
   color: var(--el-text-color-primary);
-  background-image: -webkit-linear-gradient(10deg, #C2FCFF, #F8FFDE); 
+  background-image: -webkit-linear-gradient(10deg, #C2FCFF, #F8FFDE);
   /* background: var(--el-color-primary-light-8); */
 }
+
 .layout-container-demo .el-menu {
   border-right: none;
 }
+
 .layout-container-demo .el-main {
   padding: 0;
 }
+
 .layout-container-demo .toolbar {
   display: inline-flex;
   align-items: center;
