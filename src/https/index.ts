@@ -1,5 +1,5 @@
 // 接口封装
-import { Borrow, type BookInventory, type User } from '@/type';
+import { Borrow, type Book, type BookInventory, type Permission, type User } from '@/type';
 import axios from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { TIMEOUT } from 'dns/promises';
@@ -180,6 +180,16 @@ export const queryUserId = (username: string) => {
   return request.get<User>(`/user/id/${username}`)
 }
 
+export const queryBorrowRecordList = (recordId: number, userId: number, bookId: number, excludeFinished: boolean) => {
+  return request.get<Array<Borrow>>(`/borrow/list`, {
+    params: {
+      recordId: recordId,
+      userId: userId,
+      bookId: bookId,
+      excludeFinished: excludeFinished
+    }
+  })
+}
 
 /**
  * 删除借阅记录
@@ -215,8 +225,8 @@ export const returnBorrowRecord = () => {
 }
 
 /** 修改库存信息 */
-export const updateBookInventory = (record: BookInventory) => {
-  return request.put(`/book-inventory/${record.inventoryId}`, record)
+export const updateBookInventory = (inventory: BookInventory) => {
+  return request.put(`/book-inventory/${inventory.inventoryId}`, inventory)
 }
 
 /** 删除库存 */
@@ -224,15 +234,78 @@ export const removeBookInventory = (id: number) => {
   return request.delete(`/book-inventory/${id}`)
 }
 
-export const queryBorrowRecordList = (recordId: number, userId: number, bookId: number, excludeFinished: boolean) => {
-  return request.get<Array<Borrow>>(`/borrow/list`, {
-    params: {
-      recordId: recordId,
-      userId: userId,
-      bookId: bookId,
-      excludeFinished: excludeFinished
-    }
-  })
+/** 添加库存 */
+export const addBookInventory = (inventory: BookInventory) => {
+  return request.post(`/book-inventory`, inventory)
+}
+
+
+export const updateBook = (id: number, book: Book) => {
+  return request.put(`/book/${id}`, book)
+}
+
+export const addBook = async (inventoryId: number, quantity: number) => {
+  const requests = [];
+
+  for (let i = 0; i < quantity; i++) {
+    const requestPromise = request.post(`/book`, { inventoryId: inventoryId });
+    requests.push(requestPromise);
+  }
+
+  // 等待所有请求完成，可以使用 Promise.all，如果你需要并行执行所有请求
+  try {
+    const responses = await Promise.all(requests);
+    return responses;
+  } catch (error) {
+    console.error('Error occurred while adding books:', error);
+    throw error;
+  }
+}
+
+
+/**
+ * 修改权限设置
+ * @param name 
+ * @param permission 
+ * @returns 
+ */
+export const updatePermission = (name: string, permission: Permission) => {
+  return request.put(`/permission/${name}`, permission)
+}
+
+/**
+ * 删除权限
+ * @param name 
+ * @returns 
+ */
+export const removePermission = (name: string) => {
+  return request.delete(`/permission/${name}`)
+}
+
+/**
+ * 添加权限
+ * @param permission 
+ * @returns 
+ */
+export const addPermission = (permission: Permission) => {
+  return request.post<string>(`/permission`, permission)
+}
+
+/**
+ * 按命名查询权限信息
+ * @param name 
+ * @returns 
+ */
+export const queryPermissionByName = (name: string) => {
+  return request.get<Permission>(`/permission/${name}`)
+}
+
+/**
+ * 获取权限信息列表
+ * @returns 
+ */
+export const listPermission = () => {
+  return request.get<Array<Permission>>(`/permission/list`)
 }
 
 

@@ -38,6 +38,7 @@ export interface InventoryPage {
   [property: string]: any;
 }
 
+
 export interface BookInventory {
   author?: string;
   bookTitle?: string;
@@ -84,5 +85,16 @@ export interface Borrow {
   oughtReturnDate?: Date;
   recordId: number;
   userId?: number;
+  [property: string]: any;
+}
+
+/**
+ * Permission
+ */
+export interface Permission {
+  maxBorrowBooks: number;
+  maxBorrowDay: number;
+  permissionDesc: string;
+  permissionName: string;
   [property: string]: any;
 }

@@ -6,6 +6,7 @@ import InventoryManage from '@/views/InventoryManage.vue'
 import BookManage from '@/views/BookManage.vue'
 import UserManage from '@/views/UserManage.vue'
 import BorrowRecordManage from '@/views/BorrowRecordManage.vue'
+import PermissionManage from '@/views/PermissionManage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,6 +30,10 @@ const router = createRouter({
         {
           path: '/workspace/borrow-record-manage',
           component: BorrowRecordManage,
+        },
+        {
+          path: '/workspace/permission-manage',
+          component: PermissionManage,
         },
       ]
     },

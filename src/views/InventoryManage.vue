@@ -1,60 +1,54 @@
 <template>
-  <el-button @click="addDialogVisable = true">新建书库</el-button>
+  <div class="flex items-center justify-between bg-primary p-2">
+    <div class="flex items-center ">
+      <el-input placeholder="搜索" />
+      <el-button type="primary">搜索</el-button>
+      <el-button type="success" @click="isAddDialogVisable = true">新增</el-button>
+    </div>
+  </div>
   <TableC v-bind="tableConfig">
   </TableC>
-
+  <EditDialog v-bind="addDialogConfig"></EditDialog>
+  <EditDialog v-bind="updateDialogConfig"></EditDialog>
   <ElDialog v-model="removeDialogVisable" title="确定要删除下列库存吗？" width="400">
     <div style="margin-bottom: 12px;">
-      <div>标题：{{ inventoryInfoSelected.bookTitle }}</div>
-      <div>作者：{{ inventoryInfoSelected.author }}</div>
-      <div>出版社：{{ inventoryInfoSelected.publisher }}</div>
+      <div>标题：{{ inventorySelected.bookTitle }}</div>
+      <div>作者：{{ inventorySelected.author }}</div>
+      <div>出版社：{{ inventorySelected.publisher }}</div>
     </div>
     <el-button type="danger" @click="removeInventory">确定</el-button>
     <el-button type="info" @click="removeDialogVisable = false">取消</el-button>
   </ElDialog>
-
-  <ElDialog v-model="editDialogVisable" title="编辑库存信息" width="400">
+  <ElDialog v-model="isEnterInventoryDialogVisable">
     <div style="margin-bottom: 12px;">
-      <span>标题：</span>
-      <el-input v-model="inventoryInfoSelected.bookTitle"></el-input>
-      <span>作者：</span>
-      <el-input v-model="inventoryInfoSelected.author"></el-input>
-      <span>出版社：</span>
-      <el-input v-model="inventoryInfoSelected.publisher"></el-input>
+      <ElInputNumber v-model="enterQuantity"></ElInputNumber>
     </div>
-    <el-button type="primary" @click="saveInventoryEdit">保存</el-button>
-    <el-button type="info" @click="editDialogVisable = false">取消</el-button>
-  </ElDialog>
-
-  <ElDialog v-model="addDialogVisable" title="添加库存信息" width="400">
-    <div style="margin-bottom: 12px;">
-      <span>标题：</span>
-      <el-input v-model="inventoryInfoAdded.bookTitle"></el-input>
-      <span>作者：</span>
-      <el-input v-model="inventoryInfoAdded.author"></el-input>
-      <span>出版社：</span>
-      <el-input v-model="inventoryInfoAdded.publisher"></el-input>
-    </div>
-    <el-button type="primary" @click="addDialogVisable = false">保存</el-button>
-    <el-button type="info" @click="addDialogVisable = false">取消</el-button>
+    <el-button type="danger" @click="enterInventory">确定</el-button>
+    <el-button type="info" @click="isEnterInventoryDialogVisable = false">取消</el-button>
   </ElDialog>
 </template>
 
 <script lang="ts" setup>
 import TableC from '@/components/TableC.vue'
 import { TableConfigInterface } from '@/components/TableC.vue'
-import { updateBookInventory, removeBookInventory } from '@/https';
+import { updateBookInventory, removeBookInventory, addBookInventory, addBook } from '@/https';
 import { Book, BookInventory } from '@/type'
 import { Message } from '@/utils/message';
-import { ElDialog } from 'element-plus';
-import { ref, toRaw } from 'vue'
+import { ElDialog, ElInputNumber } from 'element-plus';
+import { reactive, ref, toRaw } from 'vue'
+import EditDialog, { EditDialogConfig } from '@/components/EditDialog.vue';
 
-const inventoryInfoSelected = ref<BookInventory>()
-const inventoryInfoAdded = ref<BookInventory>({
+const inventorySelected = ref<BookInventory>()
+const inventoryAdded = ref<BookInventory>({
 
 })
-let editDialogVisable = ref<boolean>(false)
-let addDialogVisable = ref<boolean>(false)
+
+let isUpdateDialogVisable = ref<boolean>(false)
+let isAddDialogVisable = ref<boolean>(false)
+let isEnterInventoryDialogVisable = ref<boolean>(false)
+
+let enterQuantity = ref<number>(0);
+
 let removeDialogVisable = ref<boolean>(false)
 
 const tableConfig: TableConfigInterface = {
@@ -89,8 +83,8 @@ const tableConfig: TableConfigInterface = {
     columns: [
       {
         click: (row: BookInventory) => {
-          inventoryInfoSelected.value = toRaw(row)
-          editDialogVisable.value = true
+          inventorySelected.value = toRaw(row)
+          isUpdateDialogVisable.value = true
           Message('编辑库存信息')
         },
         text: '编辑',
@@ -98,13 +92,16 @@ const tableConfig: TableConfigInterface = {
         type: 'primary'
       },
       {
-        click: () => { },
+        click: (row: Book) => {
+          isEnterInventoryDialogVisable.value = true
+          inventorySelected.value = reactive({ ...row })
+        },
         text: '出入库',
         type: 'warning'
       },
       {
         click: (row: BookInventory) => {
-          inventoryInfoSelected.value = toRaw(row)
+          inventorySelected.value = reactive({ ...row })
           removeDialogVisable.value = true
           Message('删除库存信息')
         },
@@ -115,18 +112,128 @@ const tableConfig: TableConfigInterface = {
   }
 }
 
+const addDialogConfig: EditDialogConfig = {
+  visableCtl: isAddDialogVisable,
+  objEdited: inventoryAdded,
+  dialogTitle: "添加书库~",
+  noBtnText: "取消",
+  okBtnText: "确定",
+  onOkBtnClicked(obj) {
+    addBookInventory(inventoryAdded.value).catch((error) => {
+      Message(error)
+    }).then((response) => {
+      if (response && response.data) {
+        Message(response.data.msg)
+        if (response.data.code == 1) {
+          isAddDialogVisable.value = false
+        }
+      }
+    })
+  },
+  onNoBtnClicked(obj) {
+    isAddDialogVisable.value = false
+  },
+  propertyConfigs: [
+    {
+      // categoryId?: number;
+      key: "categoryId",
+      label: "分类编号",
+      placeholder: "",
+    },
+    {
+      // bookTitle?: string;
+      key: "bookTitle",
+      label: "标题",
+      placeholder: "",
+    },
+    {
+      // author?: string;
+      key: "author",
+      label: "作者",
+      placeholder: "",
+    },
+    {
+      // publisher?: string;
+      key: "publisher",
+      label: "出版社",
+      placeholder: "",
+    },
+  ]
+}
+
+const updateDialogConfig: EditDialogConfig = {
+  visableCtl: isUpdateDialogVisable,
+  objEdited: inventorySelected,
+  dialogTitle: "修改书库~",
+  noBtnText: "取消",
+  okBtnText: "确定",
+  onOkBtnClicked(obj) {
+    updateBookInventory(inventorySelected.value).catch((error) => {
+      Message(error)
+    }).then((response) => {
+      if (response && response.data) {
+        Message(response.data.msg)
+        if (response.data.code == 1) {
+          isUpdateDialogVisable.value = false
+        }
+      }
+    })
+  },
+  onNoBtnClicked(obj) {
+    isUpdateDialogVisable.value = false
+  },
+  propertyConfigs: [
+    {
+      // inventoryId?: number;
+      key: "inventoryId",
+      label: "书库编号",
+      placeholder: "",
+      unchangeable: true,
+    },
+    {
+      // categoryId?: number;
+      key: "categoryId",
+      label: "分类编号",
+      placeholder: "",
+    },
+    {
+      // bookTitle?: string;
+      key: "bookTitle",
+      label: "标题",
+      placeholder: "",
+    },
+    {
+      // author?: string;
+      key: "author",
+      label: "作者",
+      placeholder: "",
+    },
+    {
+      // publisher?: string;
+      key: "publisher",
+      label: "出版社",
+      placeholder: "",
+    },
+  ]
+}
+
+
 const saveInventoryEdit = async () => {
-  const respone = await updateBookInventory(inventoryInfoSelected.value)
+  const respone = await updateBookInventory(inventorySelected.value)
   Message(respone.data.msg)
   if (respone.data.code == 1) {
-    editDialogVisable.value = false
+    isUpdateDialogVisable.value = false
   }
 }
 
 const removeInventory = async () => {
-  const respone = await removeBookInventory(inventoryInfoSelected.value.inventoryId)
+  const respone = await removeBookInventory(inventorySelected.value.inventoryId)
   Message(respone.data.msg)
   removeDialogVisable.value = false
+}
+
+const enterInventory = async () => {
+  addBook(inventorySelected.value.inventoryId, enterQuantity.value)
 }
 
 </script>

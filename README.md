@@ -9,3 +9,15 @@
 npm install
 npm run dev
 ```
+
+## TODOs
+
+- [x] 封装编辑对话框 `EditDialog`
+  - [x] 从父组件绑定响应式数据 
+  - [x] 支持文本输入 `el-input`
+  - [x] 可配置数字输入 `el-number-input`
+  - [x] 可配置不可编辑项 `props: unchangeable`
+- [ ] 图书分类管理面板
+- [ ] 用户编辑界面授予权限
+- [ ] 管理员登录
+- [ ] 数据可视化

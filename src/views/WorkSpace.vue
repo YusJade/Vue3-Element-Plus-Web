@@ -1,6 +1,6 @@
 <template>
   <el-container class="layout-container-demo" style="height: 100%">
-    <el-aside width="200px">
+    <el-aside width="160px">
       <el-scrollbar>
         <el-menu :default-openeds="['1', '2', '3']" :router="true">
           <el-sub-menu index="1">
@@ -23,6 +23,12 @@
               <User />
             </el-icon>
             读者管理
+          </el-menu-item>
+          <el-menu-item index="/workspace/permission-manage">
+            <el-icon>
+              <User />
+            </el-icon>
+            权限管理
           </el-menu-item>
           <!-- <el-sub-menu index="2">
             <template #title>
@@ -56,7 +62,8 @@
     </el-aside>
 
     <el-container>
-      <el-header style="text-align: right; font-size: 12px">
+      <el-header style="text-align: right; font-size: 12px; height: 10%;">
+
         <div class="toolbar">
           <el-dropdown>
             <el-icon style="margin-right: 8px; margin-top: 1px">
@@ -75,10 +82,23 @@
       </el-header>
 
       <el-main>
-        <el-scrollbar>
+        <el-scrollbar class="scroll-area">
           <RouterView></RouterView>
         </el-scrollbar>
       </el-main>
+
+      <el-footer>
+        <div style="
+        margin-top: 20px;
+        text-align: center;
+        font-size: 15px;
+        background-clip: text;
+        background-image: -webkit-linear-gradient(0deg, #313435, #252523);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;">
+          Firefly-Library 管理系统
+        </div>
+      </el-footer>
     </el-container>
   </el-container>
 </template>
@@ -97,17 +117,28 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
 </script>
 
 <style scoped>
+.toolbar {
+  font-size: medium;
+}
+
+.scroll-area {
+  background-color: rgb(245, 239, 239);
+  background-position: center;
+  background-size: 100%;
+  /* background-image: url("../assets/firefly.png"); */
+}
+
 .layout-container-demo .el-header {
   position: relative;
-  background-image: -webkit-linear-gradient(10deg, #A0FAFF, #E1F59A);
+  background-image: -webkit-linear-gradient(10deg, #97e6e9f8, #d7e0b8);
   /* background-color: var(--el-color-primary-light-7); */
   color: var(--el-text-color-primary);
 }
 
 .layout-container-demo .el-aside {
   color: var(--el-text-color-primary);
-  background-image: -webkit-linear-gradient(10deg, #C2FCFF, #F8FFDE);
-  /* background: var(--el-color-primary-light-8); */
+  background-position: center;
+  background-image: -webkit-linear-gradient(10deg, #ee8071, #e1eb62);
 }
 
 .layout-container-demo .el-menu {

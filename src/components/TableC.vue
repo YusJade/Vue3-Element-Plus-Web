@@ -1,36 +1,20 @@
 <template>
   <div v-loading="loading" class="table-wrapper">
-    <el-table
-      :data="tableData"
-      :max-height="props.maxHeight"
-      :default-sort="props.defaultSort"
-      @selection-change="handleSelectionChange"
-      @sort-change="handleSortChange"
-      @row-click="goDetail"
-      :row-style="{ cursor: 'pointer' }"
-      table-layout="auto"
-      ref="tableRef"
-    >
-      <el-table-column fixed :selectable="setSelectable" type="selection" v-if="showSelectBox" />
-      <el-table-column
-        v-for="item in props.columns"
-        :key="item.prop"
-        :prop="item.prop"
-        :label="item.label"
-        :sortable="item.sortable ? 'custom' : false"
-        :width="item.width"
-      >
+    <el-table :data="tableData" :max-height="props.maxHeight"
+              :default-sort="props.defaultSort" @selection-change="handleSelectionChange"
+              @sort-change="handleSortChange" @row-click="goDetail"
+              :row-style="{ cursor: 'pointer' }" table-layout="auto" ref="tableRef">
+      <el-table-column fixed :selectable="setSelectable" type="selection"
+                       v-if="showSelectBox" />
+      <el-table-column v-for="item in props.columns" :key="item.prop" :prop="item.prop"
+                       :label="item.label" :sortable="item.sortable ? 'custom' : false"
+                       :width="item.width">
         <template #header>
           <slot name="header">
             <div class="inline-flex" :style="item.labelStyle">
               <span>{{ item.label }}</span>
-              <el-tooltip
-                popper-class="table-tooltip"
-                effect="dark"
-                placement="top-start"
-                :content="item.tooltip"
-                v-if="item.tooltip"
-              >
+              <el-tooltip popper-class="table-tooltip" effect="dark" placement="top-start"
+                          :content="item.tooltip" v-if="item.tooltip">
                 <el-icon><i-ep-Warning /></el-icon>
               </el-tooltip>
             </div>
@@ -39,30 +23,22 @@
         <template #default="scope">
           <slot :name="item.prop" :row="scope.row">
             <div :style="item.style">
-              <span v-if="item.formatter">{{ item.formatter(scope.row[item.prop]) }}</span>
+              <span v-if="item.formatter">{{ item.formatter(scope.row[item.prop])
+                }}</span>
               <span v-else>{{ scope.row[item.prop] }}</span>
             </div>
           </slot>
         </template>
       </el-table-column>
-      <el-table-column
-        fixed="right"
-        label="操作"
-        :width="props.operation?.width"
-        v-if="props.operation?.columns"
-      >
+      <el-table-column fixed="right" label="操作" :width="props.operation?.width"
+                       v-if="props.operation?.columns">
         <template #default="scope">
           <slot name="operations" :row="scope.row">
             <span v-for="item in props.operation?.columns" :key="item.text || item.icon">
-              <el-button
-                v-if="setVisible(scope.row, item.visible)"
-                :type="item.type"
-                :link="item.link"
-                :plain="item.plain"
-                @click="item.click(scope.row)"
-                size="small"
-                style="margin-right: 4px"
-              >
+              <el-button v-if="setVisible(scope.row, item.visible)" :type="item.type"
+                         :link="item.link" :plain="item.plain"
+                         @click="item.click(scope.row)" size="small"
+                         style="margin-right: 4px">
                 <!-- <i v-if="item.icon" :class="item.icon"></i> -->
                 <el-icon v-if="item.icon">
                   <component :is="item.icon"></component>
@@ -75,24 +51,15 @@
       </el-table-column>
     </el-table>
     <div v-if="showSelectBox" class="p-14">
-      <el-checkbox
-        v-model="isSelected"
-        @click="tableRef?.toggleAllSelection()"
-        :indeterminate="indeterminate"
-        label="全选"
-        style="vertical-align: middle; margin-right: 10px"
-      />
+      <el-checkbox v-model="isSelected" @click="tableRef?.toggleAllSelection()"
+                   :indeterminate="indeterminate" label="全选"
+                   style="vertical-align: middle; margin-right: 10px" />
       <slot name="footer" :rows="selectionRows">
         <span v-for="item in props.footer?.operations" :key="item.text || item.icon">
-          <el-button
-            v-if="item.visible ? item.visible() : true"
-            :type="item.type || 'primary'"
-            :link="item.link"
-            :plain="item.plain"
-            :disabled="!selectionRows.length"
-            @click="item.click(selectionRows)"
-            style="margin-left: 10px"
-          >
+          <el-button v-if="item.visible ? item.visible() : true"
+                     :type="item.type || 'primary'" :link="item.link" :plain="item.plain"
+                     :disabled="!selectionRows.length" @click="item.click(selectionRows)"
+                     style="margin-left: 10px">
             <el-icon v-if="item.icon" :class="item.icon"></el-icon>
             {{ item.text }}
           </el-button>
@@ -100,20 +67,14 @@
       </slot>
     </div>
   </div>
-  <el-pagination
-    background
-    :total="tableData.length"
-    :layout="props.layout"
-    v-model:current-page="pagination.currentPage"
-    v-model:page-size="pagination.pageSize"
-    @current-change="getTableData"
-    @size-change="getTableData"
-    class="p-y-20"
-  />
+  <el-pagination background :total="tableData.length" :layout="props.layout"
+                 v-model:current-page="pagination.currentPage"
+                 v-model:page-size="pagination.pageSize" @current-change="getTableData"
+                 @size-change="getTableData" class="p-y-20" />
 </template>
 
 <script lang="ts" setup>
-import request, { api,  } from '@/https';
+import request, { api, } from '@/https';
 import { reactive, Ref, ref, computed } from 'vue';
 export interface OperationInterface {
   click: (row: unknown) => void // 按钮点击方法，参数为当前行数据
@@ -130,7 +91,7 @@ export interface TableConfigInterface {
   columns: {
     // 显示列
     /** 键名 */
-    prop: string 
+    prop: string
     label?: string // 表头显示名称
     /** 自定义单元格格式化方法，参数为当前列数据 */
     formatter?: (col: unknown) => string
@@ -315,14 +276,17 @@ getTableData()
   border-left: 1px solid #eaeaea;
   border-right: 1px solid #eaeaea;
 }
+
 .inline-flex {
   display: inline-flex;
   align-items: center;
 }
+
 .p-14 {
   border-bottom: 1px solid #eaeaea;
   padding: 14px;
 }
+
 .p-y-20 {
   padding-top: 20px;
   padding-bottom: 20px;

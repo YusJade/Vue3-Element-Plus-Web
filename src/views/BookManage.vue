@@ -13,29 +13,24 @@
       {{ inventoryMapStore.idToNameMap.get(row.inventoryId) }}
     </template>
   </TableC>
+  <el-dialog v-model="isBorrowDialogVisable"></el-dialog>
 </template>
 
 <script lang="ts" setup>
 import TableC from '@/components/TableC.vue'
 import { TableConfigInterface } from '@/components/TableC.vue'
-import request from '@/https';
+import request, { queryBorrowRecordList, updateBook } from '@/https';
 import { useInventoryMapStore } from '@/stores/inventoryMap';
-import { Book, BookInventory } from '@/type';
+import { Book, BookInventory, Borrow } from '@/type';
 import { Message } from '@/utils/message';
-import { log } from 'console';
-import { onMounted, toRaw } from 'vue';
+import { error, log } from 'console';
+import { onMounted, ref, toRaw } from 'vue';
 
 const inventoryMapStore = useInventoryMapStore()
 inventoryMapStore.updateMap()
-// let categoryIdMap: Map<number, string> = null
-// let inventoryInfo: BookInventory[]
-// request.get('/book-inventory/list')
-//   .then((respone) => {
-//     inventoryInfo = respone.data.data
-//     Message(respone.data.msg)
-//     categoryIdMap = new Map(inventoryInfo.map(item => [item.inventoryId, item.bookTitle]))
-//   })
-// console.log(categoryIdMap)
+
+let borrwowReturned: Borrow
+let isBorrowDialogVisable = false
 
 const tableConfig: TableConfigInterface = {
   api: '/book/list',
@@ -61,34 +56,45 @@ const tableConfig: TableConfigInterface = {
       label: '弃置状态',
     },
   ],
-  // operation: {
-  //   columns: [
-  //     {
-  //       click: (row: BookInventory) => { 
-  //         inventoryInfoSelected.value = toRaw(row)
-  //         editDialogVisable.value = true 
-  //         Message('编辑库存信息') 
-  //       },
-  //       text: '编辑',
-  //       // icon: '',
-  //       type: 'primary'
-  //     },
-  //     {
-  //       click: () => {},
-  //       text: '出入库',
-  //       type: 'warning'
-  //     },
-  //     {
-  //       click: (row: BookInventory) => { 
-  //         inventoryInfoSelected.value = toRaw(row)
-  //         removeDialogVisable.value = true 
-  //         Message('删除库存信息') 
-  //       },
-  //       text: '删除',
-  //       type: 'danger'
-  //     },
-  //   ]
-  // }
+  operation: {
+    columns: [
+      {
+        visible: (row: Book) => {
+          console.log(row)
+          console.log(toRaw(row))
+          return row.isBorrowed
+        },
+        click: (row: Book) => {
+          queryBorrowRecordList(null, null, row.bookId, null)
+            .then((response) => {
+              if (response && response.data) {
+                if (response.data.data.length > 0) {
+                  borrwowReturned = response.data.data.at(0)
+                  isBorrowDialogVisable = true
+                } else {
+                  let book = toRaw(row)
+                  book.isBorrowed = false
+                  // 发送请求
+                  return updateBook(row.bookId, book)
+                }
+              }
+            })
+            .then((response) => {
+              if (response && response.data) {
+                Message(response.data.msg)
+                isBorrowDialogVisable = false
+              }
+            })
+            .catch((error) => {
+              Message(error)
+            })
+        },
+        text: '后台归还',
+        // icon: '',
+        type: 'primary'
+      },
+    ]
+  }
 }
 
 

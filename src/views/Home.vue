@@ -1,24 +1,16 @@
 <template>
-  <div class="header">  
+  <div class="header">
     <div class="status">
       <div class="books">0 Books</div>
       <div class="visists">0 Visists</div>
     </div>
     <!-- <div class="nav"> -->
-    <el-button v-if="!userStore.isLogined"
-    style="float: right;" 
-    text 
-    size="large" 
-    type="primary" 
-    @click="onBtnClick">
+    <el-button v-if="!userStore.isLogined" style="float: right;" text size="large"
+               type="primary" @click="onBtnClick">
       登录
     </el-button>
-    <el-button v-else
-    style="float: right;" 
-    text 
-    size="large" 
-    type="primary" 
-    @click="expandInfoDrawer">
+    <el-button v-else style="float: right;" text size="large" type="primary"
+               @click="expandInfoDrawer">
       {{ userStore.userInfo.username }}
     </el-button>
 
@@ -28,8 +20,8 @@
     </el-drawer>
   </div>
   <div class="main">
-    <div
-    style="
+    <div style="
+      font-family: 'Fira Code', '思源宋体';
       text-align: center;
       font-size: 50px;
       background-clip: text;
@@ -38,8 +30,7 @@
       -webkit-text-fill-color: transparent;">
       Firefly-Library
     </div>
-    <div 
-    style="color:#90A5A8;
+    <div style="color:#90A5A8;
       text-align: center;
       font-weight:400; 
       padding:4px 0 15px 0;
@@ -49,16 +40,12 @@
     <el-form>
       <div style="display: flex;">
         <el-form-item style="width: 60%; margin-left: 15%;">
-          <el-input style="width: 100%; height: 40px;"
-          v-model="searchContent" 
-          type="text">
+          <el-input style="width: 100%; height: 40px;" v-model="searchContent"
+                    type="text">
           </el-input>
         </el-form-item>
-        <el-button style="height: 40px"
-        color="#40E2A6"
-        type="primary"
-        plain  
-        @click="searchBook">
+        <el-button style="height: 40px" color="#40E2A6" type="primary" plain
+                   @click="searchBook">
           搜索
         </el-button>
       </div>
@@ -68,14 +55,17 @@
       <div class="result-item" v-for="(value, index) in bookPage.list" :key="index">
         <div class="result-item-inner">
           <span class="text-xl font-semibold">{{ value.bookTitle }}</span>
-          <div class="flex"> 
+          <div class="flex">
             <div>
               <div class="text-base text-muted-foreground">作者: {{ value.author }}</div>
-              <div class="text-base text-muted-foreground">出版社: {{ value.publisher }}</div>
+              <div class="text-base text-muted-foreground">出版社: {{ value.publisher }}
+              </div>
             </div>
             <div>
-              <div class="text-base text-muted-foreground">在库数目: {{ value.quantity }}</div>
-              <div class="text-base text-muted-foreground">库存编号: {{ value.inventoryId }}</div>
+              <div class="text-base text-muted-foreground">在库数目: {{ value.quantity }}
+              </div>
+              <div class="text-base text-muted-foreground">库存编号: {{ value.inventoryId }}
+              </div>
             </div>
           </div>
         </div>
@@ -85,17 +75,10 @@
         <p>{{ latestViewInventory.bookTitle }}</p>
         <el-table :data="inventoryData">
           <el-table-column property="bookId" label="图书编号" width="100" />
-          <el-table-column
-            prop="isBorrowed"
-            label="状态"
-            width="100"
-            :filters="[
-              { text: '可借阅', value: false },
-              { text: '不可用', value: true },
-            ]"
-            :filter-method="filterTag"
-            filter-placement="bottom-end"
-          >
+          <el-table-column prop="isBorrowed" label="状态" width="100" :filters="[
+            { text: '可借阅', value: false },
+            { text: '不可用', value: true },
+          ]" :filter-method="filterTag" filter-placement="bottom-end">
             <template #default="scope">
               <el-tag v-if="!scope.row.isBorrowed" type="success">
                 可借阅
@@ -107,7 +90,8 @@
           </el-table-column>
           <el-table-column label="操作">
             <template #default="scope">
-              <el-button @click="borrow(scope.row.bookId)" :disabled="isBorrowBtnDisabled(scope.row)">借阅</el-button>
+              <el-button @click="borrow(scope.row.bookId)"
+                         :disabled="isBorrowBtnDisabled(scope.row)">借阅</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -161,11 +145,11 @@ const user = ref<User>({
   phone: 'Unknown',
   username: 'Unknown',
 });
-const bookPage = ref<InventoryPage>({size: 0});
+const bookPage = ref<InventoryPage>({ size: 0 });
 const router = useRouter();
 const searchContent = ref("");
 const tableData = ref<Array<Object>>([]);
-const borrows= ref<Array<Borrow>>([]);
+const borrows = ref<Array<Borrow>>([]);
 const inventoryDialogVisable = ref<boolean>(false);
 const inventoryData = ref<Array<Book>>([]);
 let latestViewInventory: BookInventory = {};
@@ -206,12 +190,12 @@ const tableConfig: TableConfigInterface = {
         visible: (row: Borrow) => {
           row = toRaw(row)
           // console.info(row.actualReturnDate)
-          return row.actualReturnDate == null 
+          return row.actualReturnDate == null
         },
       },
       {
-        click: async (row: Borrow) => { 
-          Message('续借') 
+        click: async (row: Borrow) => {
+          Message('续借')
           row = toRaw(row)
           const response = await renewBorrowRecord(row.recordId)
           Message(response.data.msg)
@@ -221,7 +205,7 @@ const tableConfig: TableConfigInterface = {
         visible: (row: Borrow) => {
           row = toRaw(row)
           // console.info(row.actualReturnDate)
-          return row.actualReturnDate == null 
+          return row.actualReturnDate == null
         }
       },
     ],
@@ -244,7 +228,7 @@ const filterTag = (value: boolean, row: Book) => {
 async function openInventory(inventory: BookInventory) {
   console.log("打开库存信息对话框");
   inventoryDialogVisable.value = true;
-  latestViewInventory =  inventory;
+  latestViewInventory = inventory;
   const res = await request.get<Array<Book>>("/book/list", {
     params: { 'inventoryId': inventory.inventoryId }
   });
@@ -254,9 +238,11 @@ async function openInventory(inventory: BookInventory) {
 
 
 async function searchBook() {
-  let response = await request.get<InventoryPage>('/book-inventory/paged', { params: {
+  let response = await request.get<InventoryPage>('/book-inventory/paged', {
+    params: {
       'keyword': searchContent.value
-    }})
+    }
+  })
   bookPage.value = response.data.data
 }
 
@@ -288,9 +274,11 @@ function logout() {
 
 async function fetchAllBorrowRecords() {
   try {
-    let response = await request.get<InventoryPage>('/book-inventory/paged', { params: {
-      'keyword': searchContent.value
-    }});
+    let response = await request.get<InventoryPage>('/book-inventory/paged', {
+      params: {
+        'keyword': searchContent.value
+      }
+    });
     bookPage.value = response.data.data
     // tableData.value = bookPage.value.datas.map(item => ({
     //   // '编号': item.id,
@@ -301,7 +289,7 @@ async function fetchAllBorrowRecords() {
     console.log('图书信息')
     console.log(bookPage.value)
     console.log('图书信息提取')
-    console.log(tableData.value)     
+    console.log(tableData.value)
   } catch (err) {
     console.log(err)
   }
@@ -312,9 +300,9 @@ async function onBtnClick() {
     drawer.value = !drawer.value
     user.value = (await api.queryUser(storage.get('userId'))).data.result
   } else {
-    router.push({path: '/login'})
+    router.push({ path: '/login' })
   }
-} 
+}
 
 
 </script>
@@ -368,7 +356,7 @@ async function onBtnClick() {
 }
 
 .main {
-  margin-left: 20%; 
+  margin-left: 20%;
   width: 60%;
   vertical-align: top;
   padding-top: 20vh;
@@ -383,7 +371,7 @@ async function onBtnClick() {
   /* position: fixed; */
   width: 100%;
   bottom: 0;
-  }
+}
 
 .footer a {
   margin: 0 10px;

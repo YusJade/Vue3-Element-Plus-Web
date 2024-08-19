@@ -7,6 +7,11 @@ import HomeView from './views/Home.vue'
   <RouterView />
 </template>
 
-<style scoped>
+<style>
+@import './assets/font/font.css';
 
+#app {
+  font-family: "Source Code Pro", "思源宋体";
+  font-weight: bold;
+}
 </style>
