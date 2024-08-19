@@ -3,7 +3,7 @@
   font-family: "思源宋体";
   /* 引用字体包。.ttf后缀不区分大小写，用.TTF也可以 */
   src: url('SourceHanSerifCN-VF.ttf');
-  font-weight: normal;
+  font-weight: bold;
   font-style: normal;
 }
 
