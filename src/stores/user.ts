@@ -6,10 +6,10 @@ import type { User } from '@/type';
 
 // defineStore: Pinia 的组件化风格，以 setup 的形式定义 store
 export const useUserStore = defineStore('users', {
-  state:  () => {
+  state: () => {
     return {
       // 用户信息
-      userInfo: { } as User,
+      userInfo: {} as User,
       isLogined: false as boolean,
     }
   },
@@ -19,7 +19,7 @@ export const useUserStore = defineStore('users', {
       const res = await userLogin(username, password);
       this.userInfo = (await queryUser(res.data.data)).data.data;
       console.info('from Pinia:', res);
-      if (res.data.code == api.code.SUCCESS) {
+      if (res.data.code == 1) {
         this.isLogined = true;
       }
       return res.data;
@@ -39,4 +39,6 @@ export const useUserStore = defineStore('users', {
       Message('退出登录');
     },
   },
+  // 持久化配置
+  persist: true
 })

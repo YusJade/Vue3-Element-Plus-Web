@@ -78,3 +78,222 @@ console.log(person.height); // 输出: Getting property height 然后输出: Pro
 - **实现陷阱或钩子函数**：通过 `Proxy`，可以在对象操作中插入自定义逻辑，例如在属性读取时自动格式化数据。
 
 总的来说，`Object` 适用于日常的对象操作，而 `Proxy` 则用于实现更高级和动态的行为控制。
+
+`v-model:model-value` 是 Vue 3 中用于双向绑定的语法。在 Vue 3 中，`v-model` 指令比 Vue 2 中更灵活和强大，可以自定义绑定的 prop 和事件。`v-model:model-value` 这种形式允许你在组件中自定义 `v-model` 的绑定属性和事件名称。
+
+### 基本概念
+
+在 Vue 2 中，`v-model` 是固定绑定到 `value` 属性和 `input` 事件的：
+
+```vue
+<template>
+  <input v-model="inputValue" />
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      inputValue: ''
+    };
+  }
+};
+</script>
+```
+
+在 Vue 3 中，你可以通过 `v-model:model-value` 来绑定一个名为 `modelValue` 的属性，并且这个属性名是可以自定义的。
+
+### 自定义 `v-model` 在 Vue 3 中的使用
+
+假设你有一个自定义组件，你希望通过 `v-model` 绑定一个属性而不是默认的 `value`，那么你可以使用 `v-model:model-value` 的形式。
+
+**父组件：**
+
+```vue
+<template>
+  <CustomInput v-model:model-value="inputValue" />
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      inputValue: ''
+    };
+  }
+};
+</script>
+```
+
+**子组件 (`CustomInput.vue`)：**
+
+```vue
+<template>
+  <input :value="modelValue" @input="onInput" />
+</template>
+
+<script>
+export default {
+  props: {
+    modelValue: {
+      type: String,
+      required: true
+    }
+  },
+  methods: {
+    onInput(event) {
+      this.$emit('update:modelValue', event.target.value);
+    }
+  }
+};
+</script>
+```
+
+### 详细解释
+
+1. **`modelValue` Prop**：在子组件中定义一个 `modelValue` 的 prop，用于接收父组件通过 `v-model` 传递过来的值。
+
+2. **自定义事件 `update:modelValue`**：当输入值发生变化时，通过 `$emit` 触发 `update:modelValue` 事件，将新值传递回父组件。
+
+3. **父组件的使用**：在父组件中使用 `v-model:model-value` 绑定，这会自动将 `modelValue` 传递给子组件，同时子组件的 `update:modelValue` 事件也会更新父组件中的 `inputValue`。
+
+### 多个 `v-model`
+
+Vue 3 中你还可以为同一个组件定义多个 `v-model`，每个 `v-model` 绑定不同的 prop。例如：
+
+```vue
+<template>
+  <CustomComponent v-model:title="title" v-model:content="content" />
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      title: '',
+      content: ''
+    };
+  }
+};
+</script>
+```
+
+在这种情况下，`CustomComponent` 可以接收并发出 `title` 和 `content` 的双向绑定。
+
+### 总结
+
+- **`v-model:model-value`** 是 Vue 3 中自定义双向绑定的一种方式，可以指定要绑定的 prop 和事件。
+- **灵活性**：允许在一个组件中使用多个 `v-model` 绑定不同的属性。
+- **事件名**：子组件通过 `$emit('update:propName', value)` 来触发更新事件，propName 是 `v-model` 中的属性名。
+
+这种设计使 Vue 3 的组件更灵活，可以在各种场景下进行自定义数据绑定。
+
+
+在 Vue 3 中，`$emit('update:propName', value)` 是用来触发自定义事件的一种方式，通常用于实现双向绑定。当你在组件中使用 `v-model` 时，Vue 会自动监听一个名为 `update:propName` 的事件，并将传入的值更新到父组件的相应数据中。
+
+### 解释
+
+- **`propName`**：这是你希望双向绑定的属性名。例如，如果你在组件中有一个 `prop` 名叫 `modelValue`，那么你需要触发 `update:modelValue` 事件来更新这个属性的值。
+
+- **`value`**：这是你希望传递给父组件的新值。当事件被触发时，父组件的数据会被这个值更新。
+
+### 例子
+
+假设你有一个自定义输入组件，你希望通过 `v-model` 来双向绑定输入框的值。你可以这样实现：
+
+#### 子组件 (CustomInput.vue)
+
+```vue
+<template>
+  <input :value="modelValue" @input="onInput" />
+</template>
+
+<script>
+export default {
+  props: {
+    modelValue: {
+      type: String,
+      required: true
+    }
+  },
+  methods: {
+    onInput(event) {
+      // 当输入框的值发生变化时，触发 update:modelValue 事件，将新值传递给父组件
+      this.$emit('update:modelValue', event.target.value);
+    }
+  }
+};
+</script>
+```
+
+#### 父组件
+
+```vue
+<template>
+  <CustomInput v-model="inputValue" />
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      inputValue: ''
+    };
+  }
+};
+</script>
+```
+
+### 工作原理
+
+1. **父组件中的 `v-model`**：当你在父组件中使用 `v-model="inputValue"` 时，Vue 实际上会在子组件上绑定 `modelValue` 属性和 `update:modelValue` 事件。
+
+2. **子组件中的 `props`**：`modelValue` 被作为 `props` 传递给子组件，用于初始化输入框的值。
+
+3. **触发事件**：当输入框的值发生变化时，子组件会调用 `this.$emit('update:modelValue', newValue)`，其中 `newValue` 是输入框的新值。
+
+4. **更新父组件的值**：Vue 监听到 `update:modelValue` 事件后，会自动更新父组件中 `inputValue` 的值，使得输入框的值和父组件的数据保持同步。
+
+### 自定义绑定的灵活性
+
+在 Vue 3 中，你不仅可以绑定默认的 `modelValue`，还可以绑定其他属性：
+
+```vue
+<template>
+  <CustomComponent v-model:title="title" v-model:content="content" />
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      title: '',
+      content: ''
+    };
+  }
+};
+</script>
+```
+
+在 `CustomComponent` 中，你可以通过 `$emit('update:title', newTitle)` 和 `$emit('update:content', newContent)` 来分别更新 `title` 和 `content`。
+
+### 总结
+
+- **`$emit('update:propName', value)`**：用于触发一个事件，这个事件告诉父组件更新 `propName` 对应的数据。
+- **双向绑定**：通过在子组件中监听输入事件并触发 `update` 事件，父组件的数据能够自动与子组件的输入值保持同步。
+- **灵活性**：允许自定义 `v-model` 的绑定属性名，支持多个 `v-model` 绑定不同的属性。
+
+
+## 前者有响应式，后者无
+```html
+      <ValidatedInput v-else size="small" id="username" :clearable="false"
+                      v-model:model-value="user.username"
+                      :validate="validateUsernameLogined">
+      </ValidatedInput>
+    </el-descriptions-item>
+    <el-descriptions-item label="电话">
+      <span v-if="!isEditState"> {{ userStore.userInfo.phone }} </span>
+      <ValidatedInput v-else size="small" id="phone" :clearable="false"
+                      :model-value="user.phone" :validate="validatePhone"
+                      </ValidatedInput>
+```

@@ -224,6 +224,10 @@ export const returnBorrowRecord = () => {
 
 }
 
+export const queryBookInventory = (inventoryId: number) => {
+  return request.get<BookInventory>(`/book-inventory/${inventoryId}`)
+}
+
 /** 修改库存信息 */
 export const updateBookInventory = (inventory: BookInventory) => {
   return request.put(`/book-inventory/${inventory.inventoryId}`, inventory)
@@ -239,6 +243,14 @@ export const addBookInventory = (inventory: BookInventory) => {
   return request.post(`/book-inventory`, inventory)
 }
 
+
+export const listBook = (bookId: number, inventoryId: number, isBorrowed: boolean, isDiscarded: boolean) => {
+  return request.get<Array<Book>>('/book/list', {
+    params: {
+      bookId, inventoryId, isBorrowed, isDiscarded
+    }
+  })
+}
 
 export const updateBook = (id: number, book: Book) => {
   return request.put(`/book/${id}`, book)

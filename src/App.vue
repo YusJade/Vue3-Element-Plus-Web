@@ -14,4 +14,8 @@ import HomeView from './views/Home.vue'
   font-family: "Source Code Pro", "思源宋体";
   font-weight: bold;
 }
+
+button {
+  font-family: "Source Code Pro", "思源宋体";
+}
 </style>
