@@ -297,3 +297,52 @@ export default {
                       :model-value="user.phone" :validate="validatePhone"
                       </ValidatedInput>
 ```
+
+当归还按钮点击并成功归还后，按钮需要立即消失，需要 `v-if` 绑定一个响应式属性，但要为每个数据项配置一个响应式变量吗？可否用计算属性
+
+
+
+
+如果 `click` 函数不是返回一个 `Promise`，而是一个普通的同步或异步函数，那么我们可以手动将其转换为 `Promise`，以便能够使用 `then` 和 `await` 等异步控制流工具。
+
+### 修改后的代码
+
+你可以使用 `Promise.resolve()` 将 `click` 函数的结果封装为一个 `Promise`，即使它原本不是异步的。这样，代码可以一致地处理同步和异步操作。
+
+```typescript
+const refreshableClick = async (row: unknown, isRefresh: boolean, click: (row: unknown) => unknown) => {
+  // 将 click(row) 的结果封装为 Promise，以便使用 then 方法
+  await Promise.resolve(click(row)).then((res) => {
+    if (isRefresh) {
+      getTableData();
+    }
+  });
+};
+```
+
+### 关键点解释
+
+1. **`Promise.resolve()`**: 这个方法会将 `click(row)` 的结果封装为一个 `Promise` 对象。如果 `click(row)` 已经是一个 `Promise`，它将直接返回这个 `Promise`。如果 `click(row)` 是一个普通的值（同步函数的返回值），它会返回一个已成功解析的 `Promise`。
+
+2. **`await` 和 `then`**: 通过 `await` 和 `then`，你可以确保 `getTableData()` 只在 `click(row)` 的操作完成后才被调用，无论 `click(row)` 是同步还是异步。
+
+### 示例用法
+
+```typescript
+const handleClick = (row: unknown) => {
+  console.log('Click operation for row:', row);
+  // 这里返回一个普通的值，而不是 Promise
+  return 'Operation Success';
+};
+
+const getTableData = async () => {
+  console.log('Refreshing table data...');
+};
+
+// 使用示例
+refreshableClick(someRow, true, handleClick);
+```
+
+### 总结
+
+通过使用 `Promise.resolve()`，你可以确保 `refreshableClick` 函数能够处理 `click` 的结果，无论它是同步还是异步操作。这样做可以统一处理逻辑，避免因为 `click` 的类型不同而导致的异步控制流问题。

@@ -37,8 +37,8 @@
             <span v-for="item in props.operation?.columns" :key="item.text || item.icon">
               <el-button v-if="setVisible(scope.row, item.visible)" :type="item.type"
                          :link="item.link" :plain="item.plain"
-                         @click="item.click(scope.row)" size="small"
-                         style="margin-right: 4px">
+                         @click="refreshableClick(scope.row, item.isRefresh, item.click)"
+                         size="small" style="margin-right: 4px">
                 <!-- <i v-if="item.icon" :class="item.icon"></i> -->
                 <el-icon v-if="item.icon">
                   <component :is="item.icon"></component>
@@ -75,7 +75,7 @@
 
 <script lang="ts" setup>
 import request, { api, } from '@/https';
-import { reactive, Ref, ref, computed } from 'vue';
+import { reactive, Ref, ref, computed, watch } from 'vue';
 export interface OperationInterface {
   click: (row: unknown) => void // 按钮点击方法，参数为当前行数据
   text?: string // 按钮显示文字
@@ -84,9 +84,11 @@ export interface OperationInterface {
   type?: string // 按钮类型['primary'| 'success'| 'warning'| 'danger'| 'info']
   link?: boolean // 是否为链接按钮
   plain?: boolean // 是否为朴素按钮
+  isRefresh?: boolean // 操作后是否刷新数据
 }
 export interface TableConfigInterface {
   api: string // 表格数据获取接口
+  refreshTrigger?: boolean
   rowKey?: string // 行数据的 Key
   columns: {
     // 显示列
@@ -120,16 +122,20 @@ export interface TableConfigInterface {
   layout?: string
 }
 
+
 const props = withDefaults(defineProps<TableConfigInterface>(), {
   rowKey: 'id',
   layout: 'prev, pager, next, total',
 })
+
+
 const pagination = ref({
   currentPage: 1,
   pageSize: 10
 })
 const tableRef = ref()
-let tableData = reactive<unknown[]>([])
+// let tableData = reactive<unknown[]>([])
+let tableData = ref<unknown[]>([])
 
 // 多选框逻辑
 const isSelected = ref(false) // 是否有选中数据
@@ -150,18 +156,31 @@ const setSelectable = (row: unknown) => {
 const indeterminate = computed(
   () =>
     selectionRows.value.length > 0 &&
-    selectionRows.value.length < tableData.length - disabledList.length
+    selectionRows.value.length < tableData.value.length - disabledList.length
 )
-const showSelectBox = computed(() => props.selectable && disabledList.length < tableData.length)
+const showSelectBox = computed(() => props.selectable && disabledList.length < tableData.value.length)
+
 
 // 操作框逻辑
 const showOperation = ref(false)
+
 const setVisible = (row: unknown, visible?: (row: unknown) => boolean) => {
   if (!visible || visible(row)) {
     showOperation.value = true
     return true
   }
   return false
+}
+
+
+// 进一步封装 click ，添加刷新功能
+const refreshableClick = async (row: unknown, isRefresh: boolean, click: (row: unknown) => unknown) => {
+  await Promise.resolve(await click(row)).then(() => {
+    if (isRefresh) {
+      getTableData()
+    }
+  })
+
 }
 
 // 排序
@@ -182,92 +201,20 @@ const getTableData = async () => {
   loading.value = true
   showOperation.value = false
   const res = await request.get(props.api)
-  tableData = res.data.data
-  // tableData = [
-  //   {
-  //     date: '2016-05-02',
-  //     name: 'Tom',
-  //     state: 'California',
-  //     city: 'Los Angeles',
-  //     address: 'No. 189, Grove St, Los Angeles',
-  //     zip: 'CA 90036'
-  //   },
-  //   {
-  //     date: '2016-05-03',
-  //     name: 'Tom',
-  //     state: 'California',
-  //     city: 'Los Angeles',
-  //     address: 'No. 189, Grove St, Los Angeles',
-  //     zip: 'CA 90036'
-  //   },
-  //   {
-  //     date: '2016-05-04',
-  //     name: 'Tom',
-  //     state: 'California',
-  //     city: 'Los Angeles',
-  //     address: 'No. 189, Grove St, Los Angeles',
-  //     zip: 'CA 90036'
-  //   },
-  //   {
-  //     date: '2016-05-05',
-  //     name: 'Tom',
-  //     state: 'California',
-  //     city: 'Los Angeles',
-  //     address: 'No. 189, Grove St, Los Angeles',
-  //     zip: 'CA 90036'
-  //   },
-  //   {
-  //     date: '2016-05-06',
-  //     name: 'Tom',
-  //     state: 'California',
-  //     city: 'Los Angeles',
-  //     address: 'No. 189, Grove St, Los Angeles',
-  //     zip: 'CA 90036'
-  //   },
-  //   {
-  //     date: '2016-05-07',
-  //     name: 'Tom',
-  //     state: 'California',
-  //     city: 'Los Angeles',
-  //     address: 'No. 189, Grove St, Los Angeles',
-  //     zip: 'CA 90036'
-  //   },
-  //   {
-  //     date: '2016-05-08',
-  //     name: 'Tom',
-  //     state: 'California',
-  //     city: 'Los Angeles',
-  //     address: 'No. 189, Grove St, Los Angeles',
-  //     zip: 'CA 90036'
-  //   },
-  //   {
-  //     date: '2016-05-09',
-  //     name: 'Tom',
-  //     state: 'California',
-  //     city: 'Los Angeles',
-  //     address: 'No. 189, Grove St, Los Angeles',
-  //     zip: 'CA 90036'
-  //   },
-  //   {
-  //     date: '2016-05-10',
-  //     name: 'Tom',
-  //     state: 'California',
-  //     city: 'Los Angeles',
-  //     address: 'No. 189, Grove St, Los Angeles',
-  //     zip: 'CA 90036'
-  //   },
-  //   {
-  //     date: '2016-05-11',
-  //     name: 'Tom',
-  //     state: 'California',
-  //     city: 'Los Angeles',
-  //     address: 'No. 189, Grove St, Los Angeles',
-  //     zip: 'CA 90036'
-  //   }
-  // ]
+  tableData.value = res.data.data
   loading.value = false
 }
 getTableData()
+
+watch(() => props.refreshTrigger, () => {
+  getTableData()
+    .then(() => {
+      console.log('刷新表格')
+      console.log(tableData)
+    })
+
+})
+
 </script>
 
 <style lang="scss" scoped>

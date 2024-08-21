@@ -220,8 +220,8 @@ export const renewBorrowRecord = (recordId: number) => {
   return request.put(`/borrow/${recordId}/renew`)
 }
 
-export const returnBorrowRecord = () => {
-
+export const returnBorrowRecord = (recordId: number) => {
+  return request.put(`/borrow/${recordId}/return`)
 }
 
 export const queryBookInventory = (inventoryId: number) => {

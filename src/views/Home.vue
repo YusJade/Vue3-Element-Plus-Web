@@ -15,9 +15,10 @@
       {{ userStore.userInfo.username }}
     </el-button>
 
-    <el-drawer v-model="drawer" title="I am the title" :with-header="false" size="50%">
+    <el-drawer v-model="isDrawerVisable" title="I am the title" :with-header="false"
+               size="50%">
       <UserPanel></UserPanel>
-      <TableC v-bind="tableConfig"></TableC>
+      <TableC v-bind="tableConfig" :refresh-trigger="isDrawerVisable"></TableC>
     </el-drawer>
   </div>
   <div class="main">
@@ -50,53 +51,56 @@
         </el-button>
       </div>
     </el-form>
-    <div class="results-container" v-if="bookPage.size">
-      <span class="text-2xl font-semibold">搜索结果</span>
-      <div class="result-item" v-for="(value, index) in bookPage.list" :key="index">
-        <div class="result-item-inner">
-          <span class="text-xl font-semibold">{{ value.bookTitle }}</span>
-          <div class="flex">
-            <div>
-              <div class="text-base text-muted-foreground">作者: {{ value.author }}</div>
-              <div class="text-base text-muted-foreground">出版社: {{ value.publisher }}
+    <transition name="fade">
+      <div class="results-container" v-if="bookPage.size">
+        <span class="text-2xl font-semibold">搜索结果</span>
+        <div class="result-item" v-for="(value, index) in bookPage.list" :key="index">
+          <div class="result-item-inner">
+            <span class="text-xl font-semibold">{{ value.bookTitle }}</span>
+            <div class="flex">
+              <div>
+                <div class="text-base text-muted-foreground">作者: {{ value.author }}</div>
+                <div class="text-base text-muted-foreground">出版社: {{ value.publisher }}
+                </div>
               </div>
-            </div>
-            <div>
-              <div class="text-base text-muted-foreground">在库数目: {{ value.quantity }}
-              </div>
-              <div class="text-base text-muted-foreground">库存编号: {{ value.inventoryId }}
+              <div>
+                <div class="text-base text-muted-foreground">在库数目: {{ value.quantity }}
+                </div>
+                <div class="text-base text-muted-foreground">库存编号: {{ value.inventoryId }}
+                </div>
               </div>
             </div>
           </div>
+          <button class="search-btn" type="button"
+                  @click="openInventory(value)">借阅</button>
         </div>
-        <button class="search-btn" type="button" @click="openInventory(value)">借阅</button>
+        <el-dialog v-model="inventoryDialogVisable" title="库存信息" width="400">
+          <p>{{ latestViewInventory.bookTitle }}</p>
+          <el-table :data="inventoryData">
+            <el-table-column property="bookId" label="图书编号" width="100" />
+            <el-table-column prop="isBorrowed" label="状态" width="100" :filters="[
+              { text: '可借阅', value: false },
+              { text: '不可用', value: true },
+            ]" :filter-method="filterTag" filter-placement="bottom-end">
+              <template #default="scope">
+                <el-tag v-if="!scope.row.isBorrowed" type="success">
+                  可借阅
+                </el-tag>
+                <el-tag v-else type="info">
+                  不可用
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作">
+              <template #default="scope">
+                <el-button type="primary" @click="borrow(scope.row)" size="small"
+                           :disabled="isBorrowBtnDisabled(scope.row)">借阅</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-dialog>
       </div>
-      <el-dialog v-model="inventoryDialogVisable" title="库存信息" width="400">
-        <p>{{ latestViewInventory.bookTitle }}</p>
-        <el-table :data="inventoryData">
-          <el-table-column property="bookId" label="图书编号" width="100" />
-          <el-table-column prop="isBorrowed" label="状态" width="100" :filters="[
-            { text: '可借阅', value: false },
-            { text: '不可用', value: true },
-          ]" :filter-method="filterTag" filter-placement="bottom-end">
-            <template #default="scope">
-              <el-tag v-if="!scope.row.isBorrowed" type="success">
-                可借阅
-              </el-tag>
-              <el-tag v-else type="info">
-                不可用
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作">
-            <template #default="scope">
-              <el-button type="primary" @click="borrow(scope.row)" size="small"
-                         :disabled="isBorrowBtnDisabled(scope.row)">借阅</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-dialog>
-    </div>
+    </transition>
   </div>
 
   <div class="footer">
@@ -116,7 +120,7 @@
 <script lang="ts" setup>
 import { onMounted, reactive, ref, toRaw } from 'vue'
 import { useRouter } from "vue-router"
-import request, { api, addBorrowRecord, queryBorrowRecordList, renewBorrowRecord, listBook } from "@/https"
+import request, { api, addBorrowRecord, queryBorrowRecordList, renewBorrowRecord, listBook, returnBorrowRecord } from "@/https"
 import { Book, BookInventory, Borrow, InventoryPage, Page, User } from "@/type"
 import { storage } from '@/utils/storage'
 import { TableConfigInterface } from '@/components/TableC.vue'
@@ -132,7 +136,7 @@ import { fa, ro } from 'element-plus/es/locale'
 let bookQuantity = ref<number>(0)
 let isEditState = false
 const btnTip = ref('登录')
-const drawer = ref(false)
+const isDrawerVisable = ref(false)
 const userStore = useUserStore()
 const user = ref<User>({
   userId: 0,
@@ -200,9 +204,17 @@ const tableConfig: TableConfigInterface = {
   operation: {
     columns: [
       {
-        click: () => { Message('归还') },
+        isRefresh: true,
+        click: (row: Borrow) => {
+          returnBorrowRecord(row.recordId)
+            .then((res) => {
+              if (res && res.data) {
+                Message(res.data.msg)
+              }
+            })
+        },
         text: '归还',
-        icon: 'sun',
+        // icon: 'sun',
         visible: (row: Borrow) => {
           row = toRaw(row)
           // console.info(row.actualReturnDate)
@@ -217,7 +229,7 @@ const tableConfig: TableConfigInterface = {
           Message(response.data.msg)
         },
         text: '续借',
-        icon: 'sunrise',
+        // icon: 'sunrise',
         visible: (row: Borrow) => {
           row = toRaw(row)
           // console.info(row.actualReturnDate)
@@ -283,7 +295,7 @@ async function searchBook() {
 
 
 async function expandInfoDrawer() {
-  drawer.value = true
+  isDrawerVisable.value = true
   const res = await queryBorrowRecordList(null, userStore.userInfo.userId, null, false)
   borrows.value = res.data.data
 }
@@ -332,7 +344,7 @@ async function fetchAllBorrowRecords() {
 
 async function onBtnClick() {
   if (btnTip.value != '登录') {
-    drawer.value = !drawer.value
+    isDrawerVisable.value = !isDrawerVisable.value
     user.value = (await api.queryUser(storage.get('userId'))).data.data
   } else {
     router.push({ path: '/login' })
@@ -492,5 +504,18 @@ async function onBtnClick() {
   width: 100%;
   height: 100%;
   opacity: 1;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to
+
+/* .fade-leave-active in <2.1.8 */
+  {
+  opacity: 0;
 }
 </style>
