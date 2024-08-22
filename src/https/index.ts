@@ -1,5 +1,5 @@
 // 接口封装
-import { Borrow, type Book, type BookInventory, type Permission, type User } from '@/type';
+import { Borrow, type Book, type BookInventory, type Category, type Permission, type User } from '@/type';
 import axios from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { TIMEOUT } from 'dns/promises';
@@ -320,6 +320,28 @@ export const listPermission = () => {
   return request.get<Array<Permission>>(`/permission/list`)
 }
 
+export const updateCategory = (category: Category) => {
+  return request.put(`/category/${category.categoryId}`, category)
+}
+
+export const addCategory = (category: Category) => {
+  return request.post(`/category`, category)
+}
+
+export const removeCategory = (id: number) => {
+  return request.delete(`/category/${id}`)
+}
+
+export const queryCategoryById = (id: number) => {
+  return request.get<Category>(`/category/${id}`)
+}
+
+export const listCategory = (keyword: string) => {
+  return request.get<Array<Category>>(`/category/list`, {
+    params: { keyword }
+  }
+  )
+}
 
 export const api = {
 

@@ -21,7 +21,8 @@
       </template>
     </div>
     <el-button type="primary" @click="onOkBtnClicked">{{ props.okBtnText }}</el-button>
-    <el-button type="info" @click="onNoBtnClicked">{{ props.noBtnText }}</el-button>
+    <el-button type="info" @click="onNoBtnClicked; console.log(props.objEdited)">{{
+      props.noBtnText }}</el-button>
   </ElDialog>
 
 </template>
@@ -43,7 +44,8 @@ export interface EditPropertyConfig {
 export interface EditDialogConfig {
   visableCtl: Ref<boolean>,
   /** 被编辑的对象 ref */
-  objEdited: Ref<unknown>,
+  // objEdited: Ref<unknown>,
+  objEdited: unknown,
   dialogTitle: string,
   okBtnText: string,
   noBtnText: string,
@@ -66,10 +68,5 @@ const props = withDefaults(defineProps<EditDialogConfig>(), {
     Message('来自组件：你点了一下 okBtn ~')
   },
 });
-
-onMounted(() => {
-  console.log(props.objEdited)
-  console.log(props.objEdited.value)
-})
 
 </script>

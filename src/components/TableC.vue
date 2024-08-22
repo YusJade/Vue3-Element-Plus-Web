@@ -175,7 +175,7 @@ const setVisible = (row: unknown, visible?: (row: unknown) => boolean) => {
 
 // 进一步封装 click ，添加刷新功能
 const refreshableClick = async (row: unknown, isRefresh: boolean, click: (row: unknown) => unknown) => {
-  await Promise.resolve(await click(row)).then(() => {
+  await Promise.resolve(click(row)).then(() => {
     if (isRefresh) {
       getTableData()
     }

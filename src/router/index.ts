@@ -7,6 +7,7 @@ import BookManage from '@/views/BookManage.vue'
 import UserManage from '@/views/UserManage.vue'
 import BorrowRecordManage from '@/views/BorrowRecordManage.vue'
 import PermissionManage from '@/views/PermissionManage.vue'
+import CategoryManage from '@/views/CategoryManage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,6 +35,10 @@ const router = createRouter({
         {
           path: '/workspace/permission-manage',
           component: PermissionManage,
+        },
+        {
+          path: '/workspace/category-manage',
+          component: CategoryManage,
         },
       ]
     },

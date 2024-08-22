@@ -98,3 +98,9 @@ export interface Permission {
   permissionName: string;
   [property: string]: any;
 }
+
+export interface Category {
+  categoryId: number;
+  name?: string;
+  [property: string]: any;
+}
