@@ -12,7 +12,8 @@
 <script lang="ts" setup>
 import TableC from '@/components/TableC.vue'
 import { TableConfigInterface } from '@/components/TableC.vue'
-import request, { updateUserInfo, updateBorrowRecord, removeBorrowRecord } from '@/https'
+import request from '@/https'
+import { updateBorrowRecord, removeBorrowRecord } from '@/api/borrow'
 import { Book, BookInventory, User, Borrow } from '@/type'
 import dateUtils from '@/utils/date'
 import { Message } from '@/utils/message'

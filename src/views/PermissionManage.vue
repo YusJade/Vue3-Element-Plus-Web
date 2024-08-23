@@ -99,7 +99,7 @@ const tableConfig: TableConfigInterface = {
 
 const addDialogConfig: EditDialogConfig = {
   visableCtl: isAddDialogVisable,
-  objEdited: permissionAdded,
+  modelValue: permissionAdded,
   dialogTitle: "添加权限~",
   noBtnText: "取消",
   okBtnText: "确定",
@@ -146,7 +146,7 @@ const addDialogConfig: EditDialogConfig = {
 
 const updateDialogConfig: EditDialogConfig = {
   visableCtl: isUpdateDialogVisable,
-  objEdited: permissionSelected,
+  modelValue: permissionSelected,
   dialogTitle: "修改权限~",
   noBtnText: "取消",
   okBtnText: "确定",

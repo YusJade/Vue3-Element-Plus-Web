@@ -32,16 +32,31 @@
 import TableC from '@/components/TableC.vue'
 import { TableConfigInterface } from '@/components/TableC.vue'
 import { updateBookInventory, removeBookInventory, addBookInventory, addBook } from '@/https';
-import { Book, BookInventory } from '@/type'
+import { Book, BookInventory, Category } from '@/type'
 import { Message } from '@/utils/message';
 import { ElDialog, ElInputNumber } from 'element-plus';
-import { reactive, ref, toRaw } from 'vue'
+import { reactive, Ref, ref, toRaw } from 'vue'
 import EditDialog, { EditDialogConfig } from '@/components/EditDialog.vue';
+import { listCategory } from '@/api/category';
 
 const inventorySelected = ref<BookInventory>()
 const inventoryAdded = ref<BookInventory>({
 
 })
+
+let categoriesOpt = ref<Array<{ key: string, value: number }>>()
+let categories: Array<Category>
+listCategory('')
+  .then((res) => {
+    if (res && res.data) {
+      categories = res.data.data
+      categoriesOpt.value = categories.map(item => ({ key: item.name, value: item.categoryId }))
+    }
+  })
+  .catch((e) => console.log(e))
+  .finally(() => {
+    categoriesOpt.value = categoriesOpt.value.concat([{ key: '无', value: null }])
+  })
 
 let isUpdateDialogVisable = ref<boolean>(false)
 let isAddDialogVisable = ref<boolean>(false)
@@ -114,7 +129,7 @@ const tableConfig: TableConfigInterface = {
 
 const addDialogConfig: EditDialogConfig = {
   visableCtl: isAddDialogVisable,
-  objEdited: inventoryAdded,
+  modelValue: inventoryAdded,
   dialogTitle: "添加书库~",
   noBtnText: "取消",
   okBtnText: "确定",
@@ -139,6 +154,7 @@ const addDialogConfig: EditDialogConfig = {
       key: "categoryId",
       label: "分类编号",
       placeholder: "",
+      options: categoriesOpt
     },
     {
       // bookTitle?: string;
@@ -163,7 +179,7 @@ const addDialogConfig: EditDialogConfig = {
 
 const updateDialogConfig: EditDialogConfig = {
   visableCtl: isUpdateDialogVisable,
-  objEdited: inventorySelected,
+  modelValue: inventorySelected,
   dialogTitle: "修改书库~",
   noBtnText: "取消",
   okBtnText: "确定",
@@ -195,6 +211,7 @@ const updateDialogConfig: EditDialogConfig = {
       key: "categoryId",
       label: "分类编号",
       placeholder: "",
+      options: categoriesOpt
     },
     {
       // bookTitle?: string;

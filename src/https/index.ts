@@ -180,49 +180,6 @@ export const queryUserId = (username: string) => {
   return request.get<User>(`/user/id/${username}`)
 }
 
-export const queryBorrowRecordList = (recordId: number, userId: number, bookId: number, excludeFinished: boolean) => {
-  return request.get<Array<Borrow>>(`/borrow/list`, {
-    params: {
-      recordId: recordId,
-      userId: userId,
-      bookId: bookId,
-      excludeFinished: excludeFinished
-    }
-  })
-}
-
-/**
- * 删除借阅记录
- * @param recordId 记录Id
- * @returns 
- */
-export const removeBorrowRecord = (recordId: number) => {
-  return request.delete(`/borrow/${recordId}`)
-}
-
-/**
- * 保存对借阅记录的修改
- * @param recordId 借阅记录
- * @param record 记录修改内容
- */
-export const updateBorrowRecord = (recordId: number, record: Borrow) => {
-  return request.put(`/borrow/${recordId}`, record)
-}
-
-export const addBorrowRecord = (userId: number, bookId: number) => {
-  return request.post('/borrow', {
-    bookId: bookId,
-    userId: userId
-  })
-}
-
-export const renewBorrowRecord = (recordId: number) => {
-  return request.put(`/borrow/${recordId}/renew`)
-}
-
-export const returnBorrowRecord = (recordId: number) => {
-  return request.put(`/borrow/${recordId}/return`)
-}
 
 export const queryBookInventory = (inventoryId: number) => {
   return request.get<BookInventory>(`/book-inventory/${inventoryId}`)
@@ -320,28 +277,7 @@ export const listPermission = () => {
   return request.get<Array<Permission>>(`/permission/list`)
 }
 
-export const updateCategory = (category: Category) => {
-  return request.put(`/category/${category.categoryId}`, category)
-}
 
-export const addCategory = (category: Category) => {
-  return request.post(`/category`, category)
-}
-
-export const removeCategory = (id: number) => {
-  return request.delete(`/category/${id}`)
-}
-
-export const queryCategoryById = (id: number) => {
-  return request.get<Category>(`/category/${id}`)
-}
-
-export const listCategory = (keyword: string) => {
-  return request.get<Array<Category>>(`/category/list`, {
-    params: { keyword }
-  }
-  )
-}
 
 export const api = {
 

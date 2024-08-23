@@ -120,7 +120,8 @@
 <script lang="ts" setup>
 import { onMounted, reactive, ref, toRaw } from 'vue'
 import { useRouter } from "vue-router"
-import request, { api, addBorrowRecord, queryBorrowRecordList, renewBorrowRecord, listBook, returnBorrowRecord } from "@/https"
+import request, { api, listBook, } from "@/https"
+import { addBorrowRecord, queryBorrowRecordList, renewBorrowRecord, returnBorrowRecord } from "@/api/borrow"
 import { Book, BookInventory, Borrow, InventoryPage, Page, User } from "@/type"
 import { storage } from '@/utils/storage'
 import { TableConfigInterface } from '@/components/TableC.vue'

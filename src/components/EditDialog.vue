@@ -8,20 +8,30 @@
           <span style="margin-bottom: 10px; font-weight: bold;"> {{ item.label }} </span>
           此项不可修改
         </div>
+        <div v-else-if="item.options" style="margin-bottom: 10px;">
+          <span style="margin-bottom: 10px; font-weight: bold;"> {{ item.label }} </span>
+          <div>
+            <el-select v-model="props.modelValue[item.key]" placeholder="选择分类"
+                       size="medium" style="width: 240px">
+              <el-option v-for="option in item.options.value" :key="option.value"
+                         :label="option.key" :value="option.value" />
+            </el-select>
+          </div>
+        </div>
         <div v-else style="margin-bottom: 10px;">
           <span style="margin-bottom: 10px; font-weight: bold;"> {{ item.label }} </span>
           <div v-if="item.numberInput">
-            <el-input-number v-model="props.objEdited.value[item.key]" :min="0"
+            <el-input-number v-model="props.modelValue[item.key]" :min="0"
                              controls-position="right" class="">
             </el-input-number>
           </div>
-          <el-input v-else v-model="props.objEdited.value[item.key]"
+          <el-input v-else v-model="props.modelValue[item.key]"
                     :placeholder="item.placeholder"></el-input>
         </div>
       </template>
     </div>
     <el-button type="primary" @click="onOkBtnClicked">{{ props.okBtnText }}</el-button>
-    <el-button type="info" @click="onNoBtnClicked; console.log(props.objEdited)">{{
+    <el-button type="info" @click="onNoBtnClicked; console.log(props.modelValue)">{{
       props.noBtnText }}</el-button>
   </ElDialog>
 
@@ -32,20 +42,24 @@ import { Message } from '@/utils/message';
 import { ElInputNumber } from 'element-plus';
 import { onMounted, Ref, toRef } from 'vue';
 
+/**
+ * TODO:数据与配置分离
+ */
 export interface EditPropertyConfig {
   key: string,
   label: string,
   placeholder: string,
   numberInput?: boolean,
+  options?: Ref<Array<{ key, value }>>
   unchangeable?: boolean,
 }
 
 
 export interface EditDialogConfig {
-  visableCtl: Ref<boolean>,
   /** 被编辑的对象 ref */
   // objEdited: Ref<unknown>,
-  objEdited: unknown,
+  modelValue?: unknown,
+  visableCtl: Ref<boolean>, // 将Ref传递给Eldialog
   dialogTitle: string,
   okBtnText: string,
   noBtnText: string,

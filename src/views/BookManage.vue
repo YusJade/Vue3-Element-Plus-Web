@@ -19,7 +19,8 @@
 <script lang="ts" setup>
 import TableC from '@/components/TableC.vue'
 import { TableConfigInterface } from '@/components/TableC.vue'
-import request, { queryBorrowRecordList, updateBook } from '@/https';
+import request, { updateBook } from '@/https';
+import { queryBorrowRecordList } from '@/api/borrow';
 import { useInventoryMapStore } from '@/stores/inventoryMap';
 import { Book, BookInventory, Borrow } from '@/type';
 import { Message } from '@/utils/message';
