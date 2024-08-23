@@ -1,7 +1,9 @@
 <template>
-  <EditDialog v-bind="updateDialogConfig">
+  <EditDialog v-bind="updateDialogConfig" v-model:edit="permissionSelected"
+              v-model:visable="isUpdateDialogVisable">
   </EditDialog>
-  <EditDialog v-bind="addDialogConfig">
+  <EditDialog v-bind="addDialogConfig" v-model:edit="permissionAdded"
+              v-model:visable="isAddDialogVisable">
   </EditDialog>
   <div class="flex items-center justify-between bg-primary p-2">
     <div class="flex items-center">
@@ -18,14 +20,10 @@
 import EditDialog, { EditDialogConfig } from '@/components/EditDialog.vue'
 import TableC from '@/components/TableC.vue'
 import { TableConfigInterface } from '@/components/TableC.vue'
-import request, { updateUserInfo, updateBorrowRecord, removeBorrowRecord, updatePermission, addPermission, removePermission } from '@/https'
-import { Book, BookInventory, User, Borrow, Permission } from '@/type'
-import dateUtils from '@/utils/date'
+import { updatePermission, addPermission, removePermission } from '@/https'
+import { Permission } from '@/type'
 import { Message } from '@/utils/message'
-import { computed, onMounted, ref, toRaw } from 'vue'
-import ValidatedInput from '@/components/ValidatedInput.vue'
-import { validateUsername, validateEmail, validatePassword, validatePhone } from '@/utils/validator'
-import { useRouter } from 'vue-router'
+import { ref, toRaw } from 'vue'
 
 // 初始化验证状态对象
 // let validationState = ref({
@@ -98,7 +96,7 @@ const tableConfig: TableConfigInterface = {
 }
 
 const addDialogConfig: EditDialogConfig = {
-  visableCtl: isAddDialogVisable,
+  isVisable: isAddDialogVisable,
   modelValue: permissionAdded,
   dialogTitle: "添加权限~",
   noBtnText: "取消",
@@ -145,7 +143,7 @@ const addDialogConfig: EditDialogConfig = {
 }
 
 const updateDialogConfig: EditDialogConfig = {
-  visableCtl: isUpdateDialogVisable,
+  isVisable: isUpdateDialogVisable,
   modelValue: permissionSelected,
   dialogTitle: "修改权限~",
   noBtnText: "取消",

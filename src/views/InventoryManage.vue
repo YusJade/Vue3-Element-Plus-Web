@@ -8,8 +8,12 @@
   </div>
   <TableC v-bind="tableConfig">
   </TableC>
-  <EditDialog v-bind="addDialogConfig"></EditDialog>
-  <EditDialog v-bind="updateDialogConfig"></EditDialog>
+  <EditDialog v-bind="addDialogConfig" v-model:visable="isAddDialogVisable"
+              v-model:edit="inventoryAdded">
+  </EditDialog>
+  <EditDialog v-bind="updateDialogConfig" v-model:visable="isUpdateDialogVisable"
+              v-model:edit="inventorySelected">
+  </EditDialog>
   <ElDialog v-model="removeDialogVisable" title="确定要删除下列库存吗？" width="400">
     <div style="margin-bottom: 12px;">
       <div>标题：{{ inventorySelected.bookTitle }}</div>
@@ -128,7 +132,7 @@ const tableConfig: TableConfigInterface = {
 }
 
 const addDialogConfig: EditDialogConfig = {
-  visableCtl: isAddDialogVisable,
+  isVisable: isAddDialogVisable,
   modelValue: inventoryAdded,
   dialogTitle: "添加书库~",
   noBtnText: "取消",
@@ -178,7 +182,7 @@ const addDialogConfig: EditDialogConfig = {
 }
 
 const updateDialogConfig: EditDialogConfig = {
-  visableCtl: isUpdateDialogVisable,
+  isVisable: isUpdateDialogVisable,
   modelValue: inventorySelected,
   dialogTitle: "修改书库~",
   noBtnText: "取消",

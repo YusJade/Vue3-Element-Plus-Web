@@ -1,10 +1,15 @@
 <template>
-  <ElDialog v-model="editDialogVisable" title="编辑历史记录" width="400">
-    <div style="margin-bottom: 12px;">
+  <div class="flex items-center justify-between bg-primary p-2">
+    <div class="flex items-center">
+      <el-input placeholder="搜索" prefix-icon="search" />
+      <el-button type="success" @click="isAddDialogVisable = true"
+                 style="margin-left: 10px;" size="small">新增</el-button>
     </div>
-    <el-button type="primary" @click="saveUserEdit">保存</el-button>
-    <el-button type="info" @click="editDialogVisable = false">取消</el-button>
-  </ElDialog>
+  </div>
+  <EditDialog v-bind="updateDialogConfig" v-model:edit="recordSelected"
+              v-model:visable="isUpdateDialogVisable"></EditDialog>
+  <EditDialog v-bind="addDialogConfig" v-model:edit="recordAdded"
+              v-model:visable="isAddDialogVisable"></EditDialog>
   <TableC v-bind="tableConfig">
   </TableC>
 </template>
@@ -13,7 +18,7 @@
 import TableC from '@/components/TableC.vue'
 import { TableConfigInterface } from '@/components/TableC.vue'
 import request from '@/https'
-import { updateBorrowRecord, removeBorrowRecord } from '@/api/borrow'
+import { updateBorrowRecord, removeBorrowRecord, returnBorrowRecord, renewBorrowRecord, addBorrowRecord } from '@/api/borrow'
 import { Book, BookInventory, User, Borrow } from '@/type'
 import dateUtils from '@/utils/date'
 import { Message } from '@/utils/message'
@@ -21,57 +26,34 @@ import { computed, onMounted, ref, toRaw } from 'vue'
 import ValidatedInput from '@/components/ValidatedInput.vue'
 import { validateUsername, validateEmail, validatePassword, validatePhone } from '@/utils/validator'
 import { useRouter } from 'vue-router'
+import EditDialog from '@/components/EditDialog.vue'
+import { EditDialogConfig } from '@/components/EditDialog.vue'
 
-// 初始化验证状态对象
-// let validationState = ref({
-//   email: false,
-//   username: false,
-//   phone: false,
-//   password: false,
-// });
-let editDialogVisable = ref<boolean>(false)
-let recordInfoSelected = ref<Borrow>()
-// const isValidState = computed(() => {
-//   // console.info(Object.values(validationState.value))
-//   return !Object.values(validationState.value).some(isValid => { return isValid == false })
-// })
-// const genderOptions = [
-//   {
-//     value: "男",
-//     label: "男",
-//   },
-//   {
-//     value: "女",
-//     label: "女",
-//   },
-// // ]
-// +--------------------+----------+------+-----+-------------------+-------------------+
-// | Field              | Type     | Null | Key | Default           | Extra             |
-// +--------------------+----------+------+-----+-------------------+-------------------+
-// | record_id          | bigint   | NO   | PRI | NULL              | auto_increment    |
-// | user_id            | bigint   | NO   | MUL | NULL              |                   |
-// | book_id            | bigint   | NO   | MUL | NULL              |                   |
-// | borrow_date        | datetime | NO   |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
-// | ought_return_date  | datetime | YES  |     | NULL              |                   |
-// | actual_return_date | datetime | YES  |     | NULL              |                   |
-// +--------------------+----------+------+-----+-------------------+-------------------+
+let isUpdateDialogVisable = ref<boolean>(false)
+let isAddDialogVisable = ref<boolean>(false)
+let recordSelected = ref<Borrow>()
+let recordAdded = ref<Borrow>()
+
 const tableConfig: TableConfigInterface = {
   api: '/borrow/list',
   columns: [
     {
       prop: 'recordId',
       label: '记录编号',
+      sortable: true,
     },
     {
       prop: 'userId',
-      label: '用户Id',
+      label: '用户编号',
+      sortable: true,
       // formatter: (col: string) => {
       //   return col || "暂无"
       // }
     },
     {
       prop: 'bookId',
-      label: '书籍Id',
+      label: '书籍编号',
+      sortable: true,
     },
     {
       prop: 'borrowDate',
@@ -103,8 +85,8 @@ const tableConfig: TableConfigInterface = {
     columns: [
       {
         click: (row: Borrow) => {
-          recordInfoSelected.value = toRaw(row)
-          editDialogVisable.value = true
+          recordSelected.value = toRaw(row)
+          isUpdateDialogVisable.value = true
           Message('编辑借阅记录')
         },
         text: '编辑',
@@ -120,23 +102,133 @@ const tableConfig: TableConfigInterface = {
         text: '删除',
         type: 'danger'
       },
+      {
+        isRefresh: true,
+        click: (row: Borrow) => {
+          returnBorrowRecord(row.recordId)
+            .then((res) => {
+              if (res && res.data) {
+                Message(res.data.msg)
+              }
+            })
+        },
+        text: '已归还',
+        // icon: 'sun',
+        visible: (row: Borrow) => {
+          row = toRaw(row)
+          // console.info(row.actualReturnDate)
+          return row.actualReturnDate == null
+        },
+      },
+      {
+        click: async (row: Borrow) => {
+          Message('续借')
+          row = toRaw(row)
+          const response = await renewBorrowRecord(row.recordId)
+          Message(response.data.msg)
+        },
+        text: '续借',
+        // icon: 'sunrise',
+        visible: (row: Borrow) => {
+          row = toRaw(row)
+          // console.info(row.actualReturnDate)
+          return row.actualReturnDate == null
+        }
+      },
     ]
   }
 }
 
-const saveUserEdit = async () => {
-  const respone = await updateBorrowRecord(recordInfoSelected.value.userId, recordInfoSelected.value);
-  Message(respone.data.msg)
-  if (respone.data.code == 1) {
-    editDialogVisable.value = false
-  }
+const addDialogConfig: EditDialogConfig = {
+  isVisable: isAddDialogVisable,
+  /**
+   * 直接传categoryAdded（ref） 与 
+   * .value（ypeError: Cannot read properties of undefined (reading 'name')） 区别？
+   * 后者疑似构造了一个新的对象
+   */
+  // objEdited: categoryAdded,
+  dialogTitle: "添加借阅记录~",
+  noBtnText: "取消",
+  okBtnText: "确定",
+  onOkBtnClicked(obj) {
+    addBorrowRecord(recordAdded.value.userId, recordAdded.value.bookId).catch((error) => {
+      Message(error)
+    }).then((response) => {
+      if (response && response.data) {
+        Message(response.data.msg)
+        if (response.data.code == 1) {
+          isAddDialogVisable.value = false
+        }
+      }
+    })
+  },
+  onNoBtnClicked(obj) {
+    isAddDialogVisable.value = false
+  },
+  propertyConfigs: [
+    {
+      key: "borrowDate",
+      label: "借阅日期",
+      placeholder: "",
+      datepicker: true
+    },
+    {
+      key: "oughtReturnDate",
+      label: "截止日期",
+      placeholder: "",
+      datepicker: true
+    },
+    {
+      key: "actualReturnDate",
+      label: "归还日期",
+      placeholder: "",
+      datepicker: true
+    },
+  ]
 }
 
-const handleOnValidate = (field: string, isValid: boolean) => {
-  // console.log(field)
-  // console.info(validationState[field], validationState[data.field])
-  // validationState.value[field] = isValid;
-  // console.info(isValidState.value, validationState.value)
+const updateDialogConfig: EditDialogConfig = {
+  isVisable: isUpdateDialogVisable,
+  modelValue: recordSelected,
+  dialogTitle: "修改借阅记录~",
+  noBtnText: "取消",
+  okBtnText: "确定",
+  onOkBtnClicked(obj) {
+    updateBorrowRecord(recordSelected.value.recordId, recordSelected.value).catch((error) => {
+      Message(error)
+    }).then((response) => {
+      if (response && response.data) {
+        Message(response.data.msg)
+        if (response.data.code == 1) {
+          isUpdateDialogVisable.value = false
+        }
+      }
+    })
+  },
+  onNoBtnClicked(obj) {
+    isUpdateDialogVisable.value = false
+  },
+  propertyConfigs: [
+    {
+      key: "borrowDate",
+      label: "借阅日期",
+      placeholder: "",
+      datepicker: true
+    },
+    {
+      key: "oughtReturnDate",
+      label: "截止日期",
+      placeholder: "",
+      datepicker: true
+    },
+    {
+      key: "actualReturnDate",
+      label: "归还日期",
+      placeholder: "",
+      datepicker: true
+    },
+  ]
 }
+
 
 </script>
