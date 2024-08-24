@@ -128,6 +128,9 @@ const props = withDefaults(defineProps<TableConfigInterface>(), {
   layout: 'prev, pager, next, total',
 })
 
+watch(props, (newVal, oldVal) => {
+  getTableData()
+})
 
 const pagination = ref({
   currentPage: 1,

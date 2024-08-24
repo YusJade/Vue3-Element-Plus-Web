@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { api, userLogin, queryUser } from '../https'
+import { userLogin, queryUser } from '@/api/user'
 import { Message } from '@/utils/message';
 import type { User } from '@/type';
 

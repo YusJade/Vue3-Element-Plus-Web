@@ -147,38 +147,7 @@ export class Request {
 
 const request = new Request({})
 
-export const userLogin = (username: string, password: string) => {
-  return request.post('/user/login', { 'username': username, 'password': password })
-}
 
-export const userRegister = (data: User) => {
-  return request.post('/user/register', {
-    "username": data.username,
-    "password": data.password,
-    "name": data.name,
-    "gender": data.gender,
-    "phone": data.phone,
-    "email": data.email
-  })
-}
-
-export const queryUser = (id: string) => {
-  return request.get<User>(`/user/${Number(id)}`)
-}
-
-export const updateUserInfo = (id: string, info: User) => {
-  return request.put(`/user/${id}`, {
-    "username": info.username,
-    "name": info.name,
-    "gender": info.gender,
-    "phone": info.phone,
-    "email": info.email
-  })
-}
-
-export const queryUserId = (username: string) => {
-  return request.get<User>(`/user/id/${username}`)
-}
 
 
 export const queryBookInventory = (inventoryId: number) => {

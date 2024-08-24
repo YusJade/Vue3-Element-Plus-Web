@@ -31,21 +31,6 @@
             </el-icon>
             权限管理
           </el-menu-item>
-          <!-- <el-sub-menu index="2">
-            <template #title>
-              <el-icon><icon-menu /></el-icon>读者管理
-            </template>
-            <el-menu-item-group>
-              <template #title></template>
-              <el-menu-item index="2-2">授权设定</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="">
-              <el-menu-item index="2-3">新注册授权</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="">
-              <el-menu-item index="2-4">权限管理</el-menu-item>
-            </el-menu-item-group>
-          </el-sub-menu> -->
           <el-sub-menu index="3">
             <template #title>
               <el-icon>
@@ -55,7 +40,7 @@
             <el-menu-item-group>
               <!-- <template #title>Group 1</template> -->
               <el-menu-item index="/workspace/borrow-record-manage">历史记录</el-menu-item>
-              <el-menu-item index="3-2">逾期不还管理</el-menu-item>
+              <el-menu-item index="/workspace/overdue-manage">逾期不还管理</el-menu-item>
             </el-menu-item-group>
           </el-sub-menu>
         </el-menu>

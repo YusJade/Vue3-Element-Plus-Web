@@ -48,9 +48,9 @@ import { User } from '@/type';
 import { useUserStore } from '@/stores/user';
 import ValidatedInput from './ValidatedInput.vue';
 import router from '@/router';
-import { api, updateUserInfo } from '@/https';
+import { api } from '@/https';
 import { validateEmail, validatePhone, validateUsername } from '@/utils/validator';
-import { queryUserId } from '../https';
+import { queryUserId, updateUserInfo } from '@/api/user';
 
 let isEditState = ref(false);
 const btnTip = ref('登录');

@@ -69,7 +69,7 @@
 <script lang="ts" setup>
 import TableC from '@/components/TableC.vue'
 import { TableConfigInterface } from '@/components/TableC.vue'
-import request, { updateUserInfo, userRegister } from '@/https'
+import { updateUserInfo, userRegister } from '@/api/user'
 import { Book, BookInventory, User } from '@/type'
 import dateUtils from '@/utils/date'
 import { Message } from '@/utils/message'
