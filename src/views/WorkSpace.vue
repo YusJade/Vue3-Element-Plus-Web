@@ -72,13 +72,13 @@
             </el-icon>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item>View</el-dropdown-item>
-                <el-dropdown-item>Add</el-dropdown-item>
-                <el-dropdown-item>Delete</el-dropdown-item>
+                <el-dropdown-item @click="adminLogout">退出登录</el-dropdown-item>
+                <!-- <el-dropdown-item>Add</el-dropdown-item>
+                <el-dropdown-item>Delete</el-dropdown-item> -->
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-          <span>管理员：Tom</span>
+          <span>管理员：{{ admin.adminInfo.username }}</span>
         </div>
       </el-header>
 
@@ -107,14 +107,18 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { Menu as IconMenu, Message, Setting } from '@element-plus/icons-vue'
-import InventoryManage from './InventoryManage.vue';
+import { useAdminStore } from '@/stores/admin';
+import { useRouter } from 'vue-router';
 
-const item = {
-  date: '2016-05-02',
-  name: 'Tom',
-  address: 'No. 189, Grove St, Los Angeles',
+
+const router = useRouter()
+const admin = useAdminStore()
+
+const adminLogout = () => {
+  admin.logout()
+  router.push('/admin-login')
 }
-const tableData = ref(Array.from({ length: 20 }).fill(item))
+
 </script>
 
 <style scoped>

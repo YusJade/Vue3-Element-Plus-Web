@@ -104,3 +104,17 @@ export interface Category {
   name?: string;
   [property: string]: any;
 }
+
+/**
+ * Admin
+ */
+export interface Admin {
+  created_at?: Date;
+  email: string;
+  id: number;
+  name: string;
+  password: string;
+  phone: string;
+  username: string;
+  [property: string]: any;
+}

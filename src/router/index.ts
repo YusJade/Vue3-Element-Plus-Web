@@ -8,11 +8,19 @@ import UserManage from '@/views/UserManage.vue'
 import BorrowRecordManage from '@/views/BorrowRecordManage.vue'
 import PermissionManage from '@/views/PermissionManage.vue'
 import CategoryManage from '@/views/CategoryManage.vue'
+import AdminLogin from '@/views/AdminLogin.vue'
+import { useAdminStore } from '@/stores/admin'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      name: 'admin-login',
+      path: '/admin-login',
+      component: AdminLogin,
+    },
+    {
+      name: 'workspace',
       path: '/workspace',
       component: WorkSpace,
       children: [
@@ -40,7 +48,12 @@ const router = createRouter({
           path: '/workspace/category-manage',
           component: CategoryManage,
         },
-      ]
+      ],
+      beforeEnter: (to, from) => {
+        if (!useAdminStore().isLogined) {
+          return '/admin-login'
+        }
+      }
     },
     {
       path: '/',
@@ -67,5 +80,6 @@ const router = createRouter({
     }
   ]
 })
+
 
 export default router
