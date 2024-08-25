@@ -13,28 +13,35 @@
       {{ inventoryMapStore.idToNameMap.get(row.inventoryId) }}
     </template>
   </TableC>
-  <el-dialog v-model="isBorrowDialogVisable"></el-dialog>
+  <el-dialog v-model="isDeleteNoticeVisable">
+    与图书相关的借阅记录将会一并删除
+    <el-button type="danger" @click="stockOut">确定</el-button>
+    <el-button type="primary" @click="isDeleteNoticeVisable = false">取消</el-button>
+  </el-dialog>
 </template>
 
 <script lang="ts" setup>
 import TableC from '@/components/TableC.vue'
 import { TableConfigInterface } from '@/components/TableC.vue'
-import request, { updateBook } from '@/https';
+import { updateBook } from '@/api/book';
 import { queryBorrowRecordList } from '@/api/borrow';
 import { useInventoryMapStore } from '@/stores/inventoryMap';
 import { Book, BookInventory, Borrow } from '@/type';
 import { Message } from '@/utils/message';
 import { error, log } from 'console';
 import { onMounted, ref, toRaw } from 'vue';
+import { removeBook } from '@/api/book';
 
 const inventoryMapStore = useInventoryMapStore()
 inventoryMapStore.updateMap()
 
+let bookSelecteds = ref<Array<Book>>()
 let borrwowReturned: Borrow
-let isBorrowDialogVisable = false
+let isDeleteNoticeVisable = ref<boolean>(false)
 
 const tableConfig: TableConfigInterface = {
   api: '/book/list',
+  selectable: (row: Book) => !row.isBorrowed,
   columns: [
     {
       prop: 'bookId',
@@ -66,12 +73,12 @@ const tableConfig: TableConfigInterface = {
           return row.isBorrowed
         },
         click: (row: Book) => {
-          queryBorrowRecordList(null, null, row.bookId, null)
+          queryBorrowRecordList(null, null, row.bookId, true)
             .then((response) => {
               if (response && response.data) {
                 if (response.data.data.length > 0) {
                   borrwowReturned = response.data.data.at(0)
-                  isBorrowDialogVisable = true
+                  isDeleteNoticeVisable = true
                 } else {
                   let book = toRaw(row)
                   book.isBorrowed = false
@@ -83,7 +90,6 @@ const tableConfig: TableConfigInterface = {
             .then((response) => {
               if (response && response.data) {
                 Message(response.data.msg)
-                isBorrowDialogVisable = false
               }
             })
             .catch((error) => {
@@ -94,10 +100,38 @@ const tableConfig: TableConfigInterface = {
         // icon: '',
         type: 'primary'
       },
+      {
+        visible: (row: Book) => !row.isBorrowed,
+        click: (row: Book) => {
+          removeBook(row.bookId)
+        },
+        text: '出库',
+        // icon: '',
+        type: 'warning'
+      },
+    ]
+  },
+  footer: {
+    operations: [
+      {
+        click: (rows: Array<Book>) => {
+          isDeleteNoticeVisable.value = true
+          bookSelecteds.value = rows
+        },
+        text: '出库',
+        // icon: '',
+        type: 'warning'
+      }
     ]
   }
 }
 
+const stockOut = () => {
+  for (const row of bookSelecteds.value) {
+    removeBook(row.bookId)
+  }
+  isDeleteNoticeVisable.value = false
+}
 
 </script>
 

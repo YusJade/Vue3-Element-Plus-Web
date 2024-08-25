@@ -61,6 +61,7 @@ export interface User {
   password: string;
   phone: string;
   userId: number;
+  permissionName?: string;
 }
 
 /**

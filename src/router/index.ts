@@ -11,6 +11,7 @@ import CategoryManage from '@/views/CategoryManage.vue'
 import AdminLogin from '@/views/AdminLogin.vue'
 import { useAdminStore } from '@/stores/admin'
 import OverdueManage from '@/views/OverdueManage.vue'
+import Statistics from '@/views/Statistics.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -52,6 +53,10 @@ const router = createRouter({
         {
           path: '/workspace/overdue-manage',
           component: OverdueManage,
+        },
+        {
+          path: '/workspace/statistics',
+          component: Statistics,
         },
       ],
       beforeEnter: (to, from) => {

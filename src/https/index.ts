@@ -170,35 +170,7 @@ export const addBookInventory = (inventory: BookInventory) => {
 }
 
 
-export const listBook = (bookId: number, inventoryId: number, isBorrowed: boolean, isDiscarded: boolean) => {
-  return request.get<Array<Book>>('/book/list', {
-    params: {
-      bookId, inventoryId, isBorrowed, isDiscarded
-    }
-  })
-}
 
-export const updateBook = (id: number, book: Book) => {
-  return request.put(`/book/${id}`, book)
-}
-
-export const addBook = async (inventoryId: number, quantity: number) => {
-  const requests = [];
-
-  for (let i = 0; i < quantity; i++) {
-    const requestPromise = request.post(`/book`, { inventoryId: inventoryId });
-    requests.push(requestPromise);
-  }
-
-  // 等待所有请求完成，可以使用 Promise.all，如果你需要并行执行所有请求
-  try {
-    const responses = await Promise.all(requests);
-    return responses;
-  } catch (error) {
-    console.error('Error occurred while adding books:', error);
-    throw error;
-  }
-}
 
 
 /**

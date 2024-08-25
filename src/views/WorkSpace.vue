@@ -1,50 +1,49 @@
 <template>
   <el-container class="layout-container-demo" style="height: 100%">
     <el-aside width="160px">
-      <el-scrollbar>
-        <el-menu :default-openeds="['1', '2', '3']" :router="true">
-          <el-sub-menu index="1">
-            <template #title>
-              <el-icon>
-                <message />
-              </el-icon>图书管理
-            </template>
-            <el-menu-item-group title="库存管理">
-              <el-menu-item index="/workspace/inventory-manage">书库管理</el-menu-item>
-              <el-menu-item index="/workspace/book-manage">图书管理</el-menu-item>
-              <el-menu-item index="/workspace/category-manage">分类管理</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="查询与统计">
-              <el-menu-item index="1-4-1">信息查询</el-menu-item>
-              <el-menu-item index="1-4-1">数据统计</el-menu-item>
-            </el-menu-item-group>
-          </el-sub-menu>
-          <el-menu-item index="/workspace/user-manage">
+
+      <el-menu :default-openeds="['1', '2', '3']" :router="true">
+        <el-sub-menu index="1">
+          <template #title>
             <el-icon>
-              <User />
-            </el-icon>
-            读者管理
-          </el-menu-item>
-          <el-menu-item index="/workspace/permission-manage">
+              <message />
+            </el-icon>图书管理
+          </template>
+          <el-menu-item-group title="库存管理">
+            <el-menu-item index="/workspace/inventory-manage">书库管理</el-menu-item>
+            <el-menu-item index="/workspace/book-manage">图书管理</el-menu-item>
+            <el-menu-item index="/workspace/category-manage">分类管理</el-menu-item>
+          </el-menu-item-group>
+          <el-menu-item-group title="查询与统计">
+            <el-menu-item index="/workspace/statistics">数据统计</el-menu-item>
+          </el-menu-item-group>
+        </el-sub-menu>
+        <el-menu-item index="/workspace/user-manage">
+          <el-icon>
+            <User />
+          </el-icon>
+          读者管理
+        </el-menu-item>
+        <el-menu-item index="/workspace/permission-manage">
+          <el-icon>
+            <User />
+          </el-icon>
+          权限管理
+        </el-menu-item>
+        <el-sub-menu index="3">
+          <template #title>
             <el-icon>
-              <User />
-            </el-icon>
-            权限管理
-          </el-menu-item>
-          <el-sub-menu index="3">
-            <template #title>
-              <el-icon>
-                <setting />
-              </el-icon>借阅管理
-            </template>
-            <el-menu-item-group>
-              <!-- <template #title>Group 1</template> -->
-              <el-menu-item index="/workspace/borrow-record-manage">历史记录</el-menu-item>
-              <el-menu-item index="/workspace/overdue-manage">逾期不还管理</el-menu-item>
-            </el-menu-item-group>
-          </el-sub-menu>
-        </el-menu>
-      </el-scrollbar>
+              <setting />
+            </el-icon>借阅管理
+          </template>
+          <el-menu-item-group>
+            <!-- <template #title>Group 1</template> -->
+            <el-menu-item index="/workspace/borrow-record-manage">历史记录</el-menu-item>
+            <el-menu-item index="/workspace/overdue-manage">逾期不还管理</el-menu-item>
+          </el-menu-item-group>
+        </el-sub-menu>
+      </el-menu>
+
     </el-aside>
 
     <el-container>

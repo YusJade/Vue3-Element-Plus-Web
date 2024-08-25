@@ -1,12 +1,16 @@
 <template>
   <div class="flex items-center justify-between bg-primary p-2">
     <div class="flex items-center ">
-      <el-input placeholder="搜索" />
-      <el-button type="primary">搜索</el-button>
+      <el-input v-model="keyword" placeholder="搜索" />
+      <el-button @click="tableConfig.api = `/book-inventory/list?keyword=${keyword}`"
+                 type="primary">搜索</el-button>
       <el-button type="success" @click="isAddDialogVisable = true">新增</el-button>
     </div>
   </div>
   <TableC v-bind="tableConfig">
+    <template #categoryName="{ row }">
+      {{ categoryMap.get(row.categoryId) }}
+    </template>
   </TableC>
   <EditDialog v-bind="addDialogConfig" v-model:visable="isAddDialogVisable"
               v-model:edit="inventoryAdded">
@@ -24,6 +28,7 @@
     <el-button type="info" @click="removeDialogVisable = false">取消</el-button>
   </ElDialog>
   <ElDialog v-model="isEnterInventoryDialogVisable">
+    <span style="margin-left: 18px; margin-right: 5px; font-size: medium;"> 入库数目</span>
     <div style="margin-bottom: 12px;">
       <ElInputNumber v-model="enterQuantity"></ElInputNumber>
     </div>
@@ -35,7 +40,8 @@
 <script lang="ts" setup>
 import TableC from '@/components/TableC.vue'
 import { TableConfigInterface } from '@/components/TableC.vue'
-import { updateBookInventory, removeBookInventory, addBookInventory, addBook } from '@/https';
+import { updateBookInventory, removeBookInventory, addBookInventory } from '@/https';
+import { addBook } from '@/api/book'
 import { Book, BookInventory, Category } from '@/type'
 import { Message } from '@/utils/message';
 import { ElDialog, ElInputNumber } from 'element-plus';
@@ -48,13 +54,17 @@ const inventoryAdded = ref<BookInventory>({
 
 })
 
-let categoriesOpt = ref<Array<{ key: string, value: number }>>()
+const categoriesOpt = ref<Array<{ key: string, value: number }>>()
 let categories: Array<Category>
+let categoryMap = ref<Map<number, string>>(new Map())
 listCategory('')
   .then((res) => {
     if (res && res.data) {
       categories = res.data.data
       categoriesOpt.value = categories.map(item => ({ key: item.name, value: item.categoryId }))
+      categories.forEach(item => {
+        categoryMap.value.set(item.categoryId, item.name)
+      })
     }
   })
   .catch((e) => console.log(e))
@@ -70,8 +80,10 @@ let enterQuantity = ref<number>(0);
 
 let removeDialogVisable = ref<boolean>(false)
 
-const tableConfig: TableConfigInterface = {
-  api: '/book-inventory/list',
+let keyword = ref<string>('')
+
+const tableConfig = ref<TableConfigInterface>({
+  api: `/book-inventory/list?keyword=${keyword.value}`,
   columns: [
     {
       prop: 'inventoryId',
@@ -92,6 +104,10 @@ const tableConfig: TableConfigInterface = {
     {
       prop: 'categoryId',
       label: '分类编号',
+    },
+    {
+      prop: 'categoryName',
+      label: '分类名',
     },
     {
       prop: 'quantity',
@@ -115,7 +131,7 @@ const tableConfig: TableConfigInterface = {
           isEnterInventoryDialogVisable.value = true
           inventorySelected.value = reactive({ ...row })
         },
-        text: '出入库',
+        text: '入库',
         type: 'warning'
       },
       {
@@ -129,7 +145,7 @@ const tableConfig: TableConfigInterface = {
       },
     ]
   }
-}
+})
 
 const addDialogConfig: EditDialogConfig = {
   isVisable: isAddDialogVisable,

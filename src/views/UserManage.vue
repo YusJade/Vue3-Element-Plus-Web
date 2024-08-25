@@ -23,6 +23,12 @@
       <ValidatedInput label="密码" id="password" v-model="userSelected.password"
                       placeholder="密码" :clearable="true" :validate="validatePassword"
                       @on-validate="handleOnValidate" :show-password="true" />
+      <label for="username" class="block font-semibold text-gray-700">权限</label>
+      <el-select v-model="userSelected.permissionName" size="default"
+                 style="width: 240px">
+        <el-option v-for="option in permissionOptions" :key="option.value"
+                   :label="option.key" :value="option.value" />
+      </el-select>
     </div>
     <el-button type="primary" @click="saveUserEdit">保存</el-button>
     <el-button type="info" @click="isUpdateDialogVisable = false">取消</el-button>
@@ -51,6 +57,11 @@
       <ValidatedInput label="密码" id="password" v-model="userAdded.password"
                       placeholder="密码" :clearable="true" :validate="validatePassword"
                       @on-validate="handleOnValidate" :show-password="true" />
+      <label for="username" class="block font-semibold text-gray-700">权限</label>
+      <el-select v-model="userAdded.permissionName" size="default" style="width: 240px">
+        <el-option v-for="option in permissionOptions" :key="option.value"
+                   :label="option.key" :value="option.value" />
+      </el-select>
     </div>
     <el-button type="primary" @click="addUserInfo">保存</el-button>
     <el-button type="info" @click="isAddDialogVisable = false">取消</el-button>
@@ -69,13 +80,14 @@
 <script lang="ts" setup>
 import TableC from '@/components/TableC.vue'
 import { TableConfigInterface } from '@/components/TableC.vue'
-import { updateUserInfo, userRegister } from '@/api/user'
-import { Book, BookInventory, User } from '@/type'
+import { removeUser, updateUserInfo, userRegister } from '@/api/user'
+import { Book, BookInventory, Permission, User } from '@/type'
 import dateUtils from '@/utils/date'
 import { Message } from '@/utils/message'
 import { computed, onMounted, reactive, ref, toRaw } from 'vue'
 import ValidatedInput from '@/components/ValidatedInput.vue'
 import { validateUsername, validateEmail, validatePassword, validatePhone } from '@/utils/validator'
+import { listPermission } from '@/https'
 
 // 初始化验证状态对象
 let validationState = ref({
@@ -96,6 +108,7 @@ let userAdded = ref<User>({
   name: '',
   password: '',
   phone: '',
+  permissionName: null,
 })
 let userSelected = ref<User>()
 
@@ -113,6 +126,14 @@ const genderOptions = [
     label: "女",
   },
 ]
+let permissionOptions = ref<Array<{ key, value }>>()
+listPermission()
+  .then((res) => {
+    if (res && res.data) {
+      permissionOptions.value = res.data.data.map(item => ({ key: item.permissionName, value: item.permissionName }))
+    }
+  })
+
 const tableConfig: TableConfigInterface = {
   api: '/user/list',
   columns: [
@@ -173,7 +194,9 @@ const tableConfig: TableConfigInterface = {
         type: 'primary'
       },
       {
-        click: () => { },
+        click: (row: User) => {
+          removeUser(row.userId)
+        },
         text: '删除',
         type: 'danger'
       },

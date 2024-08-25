@@ -61,16 +61,17 @@
     <template #username="{ row }">
       {{ userMap.get(row.userId) }}
     </template>
-    <template #title="{ row }">
+    <!-- <template #title="{ row }">
       {{ inventoryMap.get(row.inventoryId) }}
-    </template>
+    </template> -->
   </TableC>
 </template>
 
 <script lang="ts" setup>
 import TableC from '@/components/TableC.vue'
 import { TableConfigInterface } from '@/components/TableC.vue'
-import request, { listBook } from '@/https'
+import request from '@/https'
+import { listBook } from '@/api/book'
 import { updateBorrowRecord, removeBorrowRecord, returnBorrowRecord, renewBorrowRecord, addBorrowRecord } from '@/api/borrow'
 import { Book, BookInventory, User, Borrow, InventoryPage } from '@/type'
 import dateUtils from '@/utils/date'
@@ -97,7 +98,7 @@ let recordAdded = ref<Borrow>({
 })
 
 let userSelected = ref<number>(-1)
-let userMap = ref<Map<number, string>>()
+let userMap = ref<Map<number, string>>(new Map())
 let userOptions = ref<Array<{ key, value }>>([
   { key: 'test', value: -1 },
 ])
@@ -110,8 +111,8 @@ listUser()
   })
   .catch((e) => console.info(e))
 
-let inventoryMap = ref<Map<number, string>>(useInventoryMapStore().idToNameMap)
-
+let inventoryMap = ref<Map<number, string>>(new Map())
+inventoryMap.value = useInventoryMapStore().idToNameMap
 
 const bookPage = ref<InventoryPage>({ size: 0 })
 const inventoryDialogVisable = ref<boolean>(false)
