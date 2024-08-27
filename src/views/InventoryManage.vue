@@ -42,7 +42,7 @@ import TableC from '@/components/TableC.vue'
 import { TableConfigInterface } from '@/components/TableC.vue'
 import { updateBookInventory, removeBookInventory, addBookInventory } from '@/https';
 import { addBook } from '@/api/book'
-import { Book, BookInventory, Category } from '@/type'
+import { type Book, type BookInventory, type Category } from '@/type'
 import { Message } from '@/utils/message';
 import { ElDialog, ElInputNumber } from 'element-plus';
 import { reactive, Ref, ref, toRaw } from 'vue'

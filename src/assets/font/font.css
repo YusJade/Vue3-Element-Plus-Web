@@ -2,7 +2,7 @@
   /* 自定义的字体名车，调用该字体时使用 */
   font-family: "思源宋体";
   /* 引用字体包。.ttf后缀不区分大小写，用.TTF也可以 */
-  src: url('SourceHanSerifCN-VF.ttf');
+  src: url('./SourceHanSerifCN-VF.ttf');
   font-weight: bold;
   font-style: normal;
 }
@@ -11,7 +11,7 @@
   /* 自定义的字体名车，调用该字体时使用 */
   font-family: "Source Code Pro";
   /* 引用字体包。.ttf后缀不区分大小写，用.TTF也可以 */
-  src: url('SourceCodePro-Regular.ttf');
+  src: url('./SourceCodePro-Regular.ttf');
   font-weight: normal;
   font-style: normal;
 }

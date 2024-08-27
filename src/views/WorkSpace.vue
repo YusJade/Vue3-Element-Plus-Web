@@ -89,8 +89,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { Menu as IconMenu, Message, Setting } from '@element-plus/icons-vue'
+import { Menu as Message, Setting } from '@element-plus/icons-vue'
 import { useAdminStore } from '@/stores/admin';
 import { useRouter } from 'vue-router';
 

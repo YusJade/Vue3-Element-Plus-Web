@@ -1,8 +1,6 @@
 <template>
   <el-table :data="tableData">
-    <el-table-column
-    v-for="item in props.columnConfigs"
-    :width="item.width">
+    <el-table-column v-for="item in props.columnConfigs" :width="item.width">
       <template #defualt="scope">
         <slot :name="item.prop" :row="item">
           <span v-if="item.formatter">{{ item.formatter(scope.row) }}</span>
@@ -10,24 +8,15 @@
         </slot>
       </template>
     </el-table-column>
-    <el-table-column
-      fixed="right"
-      label="操作"
-      :width="props.operation?.width"
-      v-if="props.operation?.columns"
-    >
+    <el-table-column fixed="right" label="操作" :width="props.operation?.width"
+                     v-if="props.operation?.columns">
       <template #default="scope">
         <slot name="operations" :row="scope.row">
           <span v-for="item in props.operation?.columns" :key="item.text || item.icon">
-            <el-button
-              v-if="setVisible(scope.row, item.visible)"
-              :type="item.type"
-              :link="item.link"
-              :plain="item.plain"
-              @click="item.click(scope.row)"
-              size="small"
-              class="margin-right: 4px"
-            >
+            <el-button v-if="setVisible(scope.row, item.visible)" :type="item.type"
+                       :link="item.link" :plain="item.plain"
+                       @click="item.click(scope.row)" size="small"
+                       class="margin-right: 4px">
               <el-icon v-if="item.icon" :class="item.icon"></el-icon>
               {{ item.text }}
             </el-button>
@@ -43,7 +32,7 @@
 interface ColumnConfig {
   prop: string,
   label: string,
-  formatter?: (string) => string,
+  formatter?: (val: string) => string,
   width?: number | string
 }
 
@@ -62,8 +51,8 @@ interface TableConfig {
   columnConfigs: Array<ColumnConfig>,
   operation?: {
     width?: number | string,
-    columns: OperationInterface[]   
-  } 
+    columns: OperationInterface[]
+  }
 }
 
 const props = defineProps<TableConfig>()

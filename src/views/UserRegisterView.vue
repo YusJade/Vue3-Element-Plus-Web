@@ -26,14 +26,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { User } from '@/type'
-import NameGenderInputBox from '@/views/NameGenderInputBox.vue'
+import { type User } from '@/type'
 import router from '@/router';
 import 'animate.css'
 
 const user: User = {
-  id: -1,
+  userId: -1,
   email: 'Unknow',
   gender: 'Unknow',
   name: 'Unknow',

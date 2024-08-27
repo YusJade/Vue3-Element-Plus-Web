@@ -1,6 +1,5 @@
 <template>
-  <div
-       style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background-image: url('src/assets/register_background.jpg'); background-size: cover; background-position: center;">
+  <div class="background-box">
     <div class="login_box">
       <div
            style="text-align: center; margin-bottom: 0rem; margin-left: -10px; margin-right: -10px;">
@@ -19,7 +18,7 @@
       <form>
         <h2 style="font-size: 1.50rem; font-weight: 600; color: #62646B;">用户注册</h2>
         <ValidatedInput label="用户名" id="username" v-model="username" placeholder="用户名"
-                        clearable="true" :validate="validateUsername"
+                        :clearable="true" :validate="validateUsername"
                         @on-validate="handleOnValidate" />
         <ValidatedInput label="邮箱" id="email" v-model="email" placeholder="邮箱"
                         :clearable="true" :validate="validateEmail"
@@ -62,21 +61,21 @@
 <script lang="ts" setup>
 import { computed, reactive, ref } from 'vue';
 import { useRouter } from "vue-router"
-import { User } from '@/type';
-import { api, userRegister } from '@/https';
+import { type User } from '@/type';
+import { userRegister } from '@/api/user';
 import ValidatedInput from '../components/ValidatedInput.vue';
 import { validateUsername, validateEmail, validatePassword, validatePhone } from '../utils/validator'
 import { Message } from '@/utils/message';
 
 const router = useRouter();
 
-const username = ref<String>("");
-const email = ref<String>("");
-const phone = ref<String>("");
-const name = ref<String>("");
-const gender = ref<String>("男");
-const password = ref<String>("");
-const confirmPassword = ref<String>("");
+const username = ref<string>("");
+const email = ref<string>("");
+const phone = ref<string>("");
+const name = ref<string>("");
+const gender = ref<string>("男");
+const password = ref<string>("");
+const confirmPassword = ref<string>("");
 
 // 初始化验证状态对象
 let validationState = ref({
@@ -123,6 +122,7 @@ const validateConfrimPassword = (value: string) => {
 const onRegisterBtnClicked = () => {
   console.log(validationState)
   let user: User = {
+    userId: 0,
     username: username.value,
     email: email.value,
     phone: phone.value,
@@ -175,6 +175,16 @@ const genderOptions = [
   to {
     opacity: 1;
   }
+}
+
+.background-box {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('../assets/register_background.png');
+  background-size: cover;
+  background-position: center;
 }
 
 .login_box {

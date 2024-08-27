@@ -1,32 +1,28 @@
 <template>
-<div>
-  <MultiInputBox :inputParams="[nameConfig]">
-    <label style="text-align: right; width: 6rem; margin-top: 0.7rem">您的性别</label>
-    <el-select v-model="gender" 
-    style=" margin-left: auto;
+  <div>
+    <MultiInputBox :inputParams="[nameConfig]">
+      <label style="text-align: right; width: 6rem; margin-top: 0.7rem">您的性别</label>
+      <el-select v-model="gender" style=" margin-left: auto;
     flex: 1;
     width: 15rem;
     padding: 0.5rem;
-    font-size: 0.875rem;"  >
-      <el-option 
-      v-for="option in genderOptions"
-      :key="option.value"
-      :value="option.value"
-      :label="option.label">
-      </el-option> 
-    </el-select>
-  </MultiInputBox>
-  <div class="form-actions">
+    font-size: 0.875rem;">
+        <el-option v-for="option in genderOptions" :key="option.value"
+                   :value="option.value" :label="option.label">
+        </el-option>
+      </el-select>
+    </MultiInputBox>
+    <div class="form-actions">
       <el-button type="primary" @click="onNextBtnClick">下一步</el-button>
+    </div>
   </div>
-</div>
 </template>
 
 <script lang="ts" setup>
 import MultiInputBox from '@/components/MultiInputBox.vue'
-import { InputConfig }  from '@/components/MultiInputBox.vue'
-import { User } from '@/type';
-import { Ref, ref } from 'vue';
+import { type InputConfig } from '@/components/MultiInputBox.vue'
+import { type User } from '@/type';
+import { ref } from 'vue';
 import router from '@/router';
 
 const props = defineProps<{ user: User }>()
@@ -41,7 +37,7 @@ const nameConfig = ref<InputConfig>({
 function onNextBtnClick() {
   props.user.gender = gender.value
   props.user.name = nameConfig.value.vModel
-  router.push({name: 'input-email-phone'})
+  router.push({ name: 'input-email-phone' })
   // router.push({ path: '' })
 }
 
@@ -70,6 +66,7 @@ const genderOptions = [
   transition: all 0.3s ease-in-out;
   outline: none;
 }
+
 .form-actions {
   display: flex;
   justify-content: flex-end;

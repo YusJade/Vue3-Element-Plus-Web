@@ -10,9 +10,9 @@
 
 <script lang="ts" setup>
 import MultiInputBox from '@/components/MultiInputBox.vue'
-import { InputConfig } from '@/components/MultiInputBox.vue'
-import { User } from '@/type';
-import { Ref, ref } from 'vue';
+import { type InputConfig } from '@/components/MultiInputBox.vue'
+import { type User } from '@/type';
+import { ref } from 'vue';
 import router from '@/router';
 
 const props = defineProps<{ user: User }>()
@@ -35,16 +35,6 @@ function onNextBtnClick() {
   // router.push({ path: '' })
 }
 
-const genderOptions = [
-  {
-    label: '男',
-    value: '男',
-  },
-  {
-    label: '女',
-    value: '女',
-  },
-]
 
 </script>
 

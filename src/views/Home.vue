@@ -123,17 +123,14 @@ import { useRouter } from "vue-router"
 import request, { api, } from "@/https"
 import { listBook } from '@/api/book'
 import { addBorrowRecord, queryBorrowRecordList, renewBorrowRecord, returnBorrowRecord } from "@/api/borrow"
-import { Book, BookInventory, Borrow, InventoryPage, Page, User } from "@/type"
-import { storage } from '@/utils/storage'
+import { type Book, type BookInventory, type Borrow, type InventoryPage, type User } from "@/type"
 import { TableConfigInterface } from '@/components/TableC.vue'
 import TableC from '@/components/TableC.vue'
 import { Message } from '@/utils/message'
-import { formatDate, formatDateFromStr } from '@/utils/date'
+import { formatDateFromStr } from '@/utils/date'
 import UserPanel from '@/components/UserPanel.vue'
 import { useUserStore } from '@/stores/user'
 import { ElButton } from 'element-plus'
-import { error, info } from 'console'
-import { fa, ro } from 'element-plus/es/locale'
 
 let bookQuantity = ref<number>(0)
 let isEditState = false
@@ -303,8 +300,8 @@ async function expandInfoDrawer() {
 }
 
 async function refreshBorrows() {
-  const id = storage.get('userId')
-  const response = await api.queryBorrow(id)
+  const id = useUserStore().userInfo.userId
+  const response = await api.queryBorrow(String(id))
   borrows.value = response.data.data
 }
 
@@ -316,10 +313,6 @@ async function refreshBorrows() {
 //   }
 // }, 10);
 
-function logout() {
-  storage.remove('userId')
-  location.reload()
-}
 
 async function fetchAllBorrowRecords() {
   try {
@@ -346,8 +339,9 @@ async function fetchAllBorrowRecords() {
 
 async function onBtnClick() {
   if (btnTip.value != '登录') {
+    const id = useUserStore().userInfo.userId
     isDrawerVisable.value = !isDrawerVisable.value
-    user.value = (await api.queryUser(storage.get('userId'))).data.data
+    user.value = (await api.queryUser(String(id))).data.data
   } else {
     router.push({ path: '/login' })
   }

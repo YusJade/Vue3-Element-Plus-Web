@@ -26,10 +26,9 @@ import { TableConfigInterface } from '@/components/TableC.vue'
 import { updateBook } from '@/api/book';
 import { queryBorrowRecordList } from '@/api/borrow';
 import { useInventoryMapStore } from '@/stores/inventoryMap';
-import { Book, BookInventory, Borrow } from '@/type';
+import { type Book, type Borrow } from '@/type';
 import { Message } from '@/utils/message';
-import { error, log } from 'console';
-import { onMounted, ref, toRaw } from 'vue';
+import { ref, toRaw } from 'vue';
 import { removeBook } from '@/api/book';
 
 const inventoryMapStore = useInventoryMapStore()

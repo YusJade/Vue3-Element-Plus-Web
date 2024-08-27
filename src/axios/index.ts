@@ -1,8 +1,8 @@
 import axios from "axios";
 const api = axios.create(
-	{ 
-		baseURL: "/api", //ÕâÀïÅäÖÃµÄÊÇºó¶Ë·şÎñÌá¹©µÄ½Ó¿Ú
-		timeout: 3000 
+	{
+		baseURL: "/api", //è¿™é‡Œé…ç½®çš„æ˜¯åç«¯æœåŠ¡æä¾›çš„æ¥å£
+		timeout: 3000
 	}
 );
 export default api;

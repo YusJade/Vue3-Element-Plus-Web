@@ -50,7 +50,7 @@
 <script lang="ts" setup>
 import { Message } from '@/utils/message';
 import { ElInputNumber } from 'element-plus';
-import { onMounted, Ref, toRef } from 'vue';
+import { onMounted, type Ref, toRef } from 'vue';
 
 /**
  * TODO:数据与配置分离
@@ -60,7 +60,7 @@ export interface EditPropertyConfig {
   label: string,
   placeholder: string,
   numberInput?: boolean,
-  options?: Ref<Array<{ key, value }>>
+  options?: Ref<Array<{ key: any, value: any }>>
   unchangeable?: boolean,
   datepicker?: boolean
 }
@@ -76,9 +76,9 @@ export interface EditDialogConfig {
   okBtnText: string,
   noBtnText: string,
   /** 确认按钮点击时触发的回调 */
-  onOkBtnClicked: (obj: unknown) => void,
+  onOkBtnClicked: (obj: any) => void,
   /** 否认按钮点击时触发的回调 */
-  onNoBtnClicked: (obj: unknown) => void,
+  onNoBtnClicked: (obj: any) => void,
   /** 配置被编辑对象中的各个属性 */
   propertyConfigs: Array<EditPropertyConfig>,
 }
@@ -90,10 +90,10 @@ const props = withDefaults(defineProps<EditDialogConfig>(), {
   dialogTitle: "这是个标题~",
   noBtnText: "取消",
   okBtnText: "确定",
-  onNoBtnClicked(obj) {
+  onNoBtnClicked(obj: any) {
     Message('来自组件：你点了一下 noBtn ~')
   },
-  onOkBtnClicked(obj) {
+  onOkBtnClicked(obj: any) {
     Message('来自组件：你点了一下 okBtn ~')
   },
 });
